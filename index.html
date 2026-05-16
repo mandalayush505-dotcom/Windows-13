@@ -3,149 +3,605 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Windows 13 Concept</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Windows 11 Web Replica</title>
+    <!-- FontAwesome for Windows 11 looking icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop') no-repeat center center fixed;
-            background-size: cover;
+        :root {
+            --accent-color: #0078d4;
+            --taskbar-bg: rgba(243, 243, 243, 0.85);
+            --window-bg: rgba(255, 255, 255, 0.85);
+            --menu-bg: rgba(243, 243, 243, 0.92);
+            --text-color: #1c1c1c;
+            --border-color: rgba(0, 0, 0, 0.15);
+            --blur-effect: blur(25px) saturate(180%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=2832&auto=format&fit=crop') no-repeat center center/cover;
         }
-        .glass {
+
+        /* --- Desktop Grid System --- */
+        .desktop {
+            width: 100%;
+            height: calc(100% - 48px);
+            position: relative;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 80px);
+            grid-template-rows: repeat(auto-fill, 85px);
+            grid-auto-flow: column;
+            gap: 15px;
+        }
+
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 85px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s, border 0.2s;
+        }
+
+        .desktop-icon:hover {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
-        .start-menu {
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+
+        .desktop-icon i {
+            font-size: 28px;
+            margin-bottom: 6px;
         }
-        .start-menu.open {
-            transform: translateY(0);
+        
+        .desktop-icon.edge i { color: #107c41; }
+        .desktop-icon.explorer i { color: #ffb900; }
+        .desktop-icon.terminal i { color: #cccccc; }
+
+        .desktop-icon span {
+            color: white;
+            font-size: 12px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
-        .app-icon:active {
+
+        /* --- Operating Window System (Fluid Dragging) --- */
+        .window {
+            position: absolute;
+            width: 650px;
+            height: 450px;
+            background: var(--window-bg);
+            backdrop-filter: var(--blur-effect);
+            -webkit-backdrop-filter: var(--blur-effect);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 10;
+            transform: scale(0.95);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.15s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.15s;
+        }
+
+        .window.active {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .window.maximized {
+            width: 100% !important;
+            height: calc(100% - 48px) !important;
+            top: 0 !important;
+            left: 0 !important;
+            border-radius: 0;
+        }
+
+        .window-titlebar {
+            height: 40px;
+            background: rgba(255, 255, 255, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 12px;
+            cursor: move;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .titlebar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .titlebar-controls {
+            display: flex;
+        }
+
+        .control-btn {
+            width: 46px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .control-btn:hover {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .control-btn.close:hover {
+            background: #e81123;
+            color: white;
+        }
+
+        .window-body {
+            flex-grow: 1;
+            width: 100%;
+            height: calc(100% - 40px);
+            background: white;
+        }
+
+        .window-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Dedicated Terminal Styling */
+        .terminal-body {
+            background: #0c0c0c;
+            color: #cccccc;
+            font-family: 'Consolas', monospace;
+            padding: 12px;
+            font-size: 14px;
+            overflow-y: auto;
+        }
+        .terminal-line { margin-bottom: 4px; }
+        .terminal-input-row { display: flex; }
+        .terminal-prompt { color: #00ff00; margin-right: 8px; }
+        .terminal-input-row input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            flex-grow: 1;
+            outline: none;
+        }
+
+        /* --- Taskbar Architecture --- */
+        .taskbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 48px;
+            background: var(--taskbar-bg);
+            backdrop-filter: var(--blur-effect);
+            -webkit-backdrop-filter: var(--blur-effect);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 12px;
+            z-index: 9999;
+        }
+
+        .taskbar-left, .taskbar-right {
+            width: 200px;
+            display: flex;
+            align-items: center;
+        }
+
+        .taskbar-right {
+            justify-content: flex-end;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-color);
+        }
+
+        .system-tray-icons {
+            display: flex;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .taskbar-center {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .taskbar-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            position: relative;
+        }
+
+        .taskbar-icon:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .taskbar-icon:active {
             transform: scale(0.9);
+        }
+
+        /* Start Button Custom Fluid Logo */
+        .start-btn i {
+            color: #0078d4;
+        }
+
+        /* System App Indicators */
+        .taskbar-icon::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 2px;
+            transition: width 0.2s;
+        }
+        .taskbar-icon.running::after {
+            width: 6px;
+        }
+        .taskbar-icon.active-window::after {
+            width: 16px;
+        }
+
+        /* --- Complete Start Menu --- */
+        .start-menu {
+            position: absolute;
+            bottom: -600px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 520px;
+            height: 550px;
+            background: var(--menu-bg);
+            backdrop-filter: var(--blur-effect);
+            -webkit-backdrop-filter: var(--blur-effect);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: bottom 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
+            z-index: 999;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .start-menu.open {
+            bottom: 60px;
+        }
+
+        .start-search {
+            width: 100%;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: white;
+            outline: none;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .start-apps-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+            flex-grow: 1;
+        }
+
+        .start-app-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .start-app-item i {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .start-app-item span {
+            font-size: 11px;
+            color: var(--text-color);
+        }
+        
+        .time-widget {
+            text-align: right;
+            line-height: 1.3;
         }
     </style>
 </head>
-<body class="h-screen w-screen text-white select-none">
+<body>
 
-    <!-- Desktop Icons -->
-    <div class="p-4 grid grid-cols-1 gap-8 w-24">
-        <div class="flex flex-col items-center gap-1 group cursor-pointer" onclick="toggleWindow('files')">
-            <div class="p-3 rounded-lg group-hover:bg-white/10 transition">
-                <i data-lucide="folder" class="w-10 h-10 text-yellow-400"></i>
-            </div>
-            <span class="text-xs shadow-sm">Files</span>
+    <!-- Desktop Workspace Grid -->
+    <div class="desktop" id="desktop">
+        <div class="desktop-icon edge" onclick="openWindow('browser-win')">
+            <i class="fa-brands fa-edge"></i>
+            <span>Edge Browser</span>
         </div>
-        <div class="flex flex-col items-center gap-1 group cursor-pointer" onclick="toggleWindow('browser')">
-            <div class="p-3 rounded-lg group-hover:bg-white/10 transition">
-                <i data-lucide="globe" class="w-10 h-10 text-blue-400"></i>
-            </div>
-            <span class="text-xs shadow-sm">Edge 2.0</span>
+        <div class="desktop-icon explorer" onclick="openWindow('explorer-win')">
+            <i class="fa-solid fa-folder-open"></i>
+            <span>File Explorer</span>
+        </div>
+        <div class="desktop-icon terminal" onclick="openWindow('terminal-win')">
+            <i class="fa-solid fa-terminal"></i>
+            <span>Terminal</span>
         </div>
     </div>
 
-    <!-- Futuristic Window (Browser Example) -->
-    <div id="window-browser" class="hidden absolute top-20 left-1/4 w-1/2 h-2/3 glass rounded-xl shadow-2xl flex flex-col overflow-hidden">
-        <div class="flex justify-between items-center p-3 bg-white/5 border-b border-white/10">
-            <span class="text-sm font-medium ml-2">Microsoft Edge</span>
-            <div class="flex gap-4 px-2">
-                <div class="w-3 h-3 rounded-full bg-yellow-400/50"></div>
-                <div class="w-3 h-3 rounded-full bg-green-400/50"></div>
-                <div class="w-3 h-3 rounded-full bg-red-400/50 cursor-pointer" onclick="toggleWindow('browser')"></div>
+    <!-- Application Frame Window: Edge Browser -->
+    <div class="window" id="browser-win" style="top: 10%; left: 15%;">
+        <div class="window-titlebar" onmousedown="dragWindow(this)">
+            <div class="titlebar-left">
+                <i class="fa-brands fa-edge" style="color: #107c41;"></i>
+                <span>Edge Browser</span>
+            </div>
+            <div class="titlebar-controls">
+                <div class="control-btn" onclick="minimizeWindow('browser-win')"><i class="fa-solid fa-minus"></i></div>
+                <div class="control-btn" onclick="maximizeWindow('browser-win')"><i class="fa-regular fa-square"></i></div>
+                <div class="control-btn close" onclick="closeWindow('browser-win')"><i class="fa-solid fa-xmark"></i></div>
             </div>
         </div>
-        <div class="flex-1 bg-white flex items-center justify-center text-gray-800">
-            <div class="text-center">
-                <h2 class="text-2xl font-bold">Windows 13</h2>
-                <p class="text-gray-500">The web, redesigned for the future.</p>
+        <div class="window-body">
+            <iframe src="https://www.bing.com"></iframe>
+        </div>
+    </div>
+
+    <!-- Application Frame Window: File Explorer -->
+    <div class="window" id="explorer-win" style="top: 15%; left: 20%;">
+        <div class="window-titlebar" onmousedown="dragWindow(this)">
+            <div class="titlebar-left">
+                <i class="fa-solid fa-folder-open" style="color: #ffb900;"></i>
+                <span>File Explorer</span>
+            </div>
+            <div class="titlebar-controls">
+                <div class="control-btn" onclick="minimizeWindow('explorer-win')"><i class="fa-solid fa-minus"></i></div>
+                <div class="control-btn" onclick="maximizeWindow('explorer-win')"><i class="fa-regular fa-square"></i></div>
+                <div class="control-btn close" onclick="closeWindow('explorer-win')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+        </div>
+        <div class="window-body">
+            <iframe src="https://view.officeapps.live.com/op/embed.aspx?src=https://nobelprize.org/pdf/economic-sciences/2022/econprize2022.pdf" style="background:#f3f3f3; padding: 20px; font-size:14px;"></iframe>
+        </div>
+    </div>
+
+    <!-- Application Frame Window: Terminal -->
+    <div class="window" id="terminal-win" style="top: 20%; left: 25%;">
+        <div class="window-titlebar" onmousedown="dragWindow(this)">
+            <div class="titlebar-left">
+                <i class="fa-solid fa-terminal" style="color: #ccc;"></i>
+                <span>Windows Terminal</span>
+            </div>
+            <div class="titlebar-controls">
+                <div class="control-btn" onclick="minimizeWindow('terminal-win')"><i class="fa-solid fa-minus"></i></div>
+                <div class="control-btn" onclick="maximizeWindow('terminal-win')"><i class="fa-regular fa-square"></i></div>
+                <div class="control-btn close" onclick="closeWindow('terminal-win')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+        </div>
+        <div class="window-body terminal-body" onclick="document.getElementById('term-input').focus()">
+            <div id="terminal-output">
+                <div class="terminal-line">Windows PowerShell</div>
+                <div class="terminal-line">Copyright (C) Microsoft Corporation. All rights reserved.</div>
+                <div class="terminal-line">Type 'help' or 'clear' to interact.</div>
+                <div class="terminal-line">&nbsp;</div>
+            </div>
+            <div class="terminal-input-row">
+                <span class="terminal-prompt">PS C:\Users\VercelUser&gt;</span>
+                <input type="text" id="term-input" onkeydown="handleTerminal(event)" autofocus autocomplete="off">
             </div>
         </div>
     </div>
 
-    <!-- Start Menu -->
-    <div id="start-menu" class="start-menu fixed bottom-16 left-1/2 -translate-x-1/2 w-[500px] h-[600px] glass rounded-2xl shadow-2xl p-8 z-50">
-        <div class="mb-8">
-            <input type="text" placeholder="Search apps, settings, and documents" class="w-full bg-black/20 border border-white/10 rounded-full py-2 px-4 outline-none focus:border-blue-500/50 transition">
-        </div>
-        <div class="grid grid-cols-4 gap-6">
-            <div class="flex flex-col items-center gap-2 hover:bg-white/5 p-4 rounded-xl transition cursor-pointer">
-                <i data-lucide="settings" class="w-8 h-8"></i>
-                <span class="text-xs">Settings</span>
+    <!-- Interactive Windows 11 Start Menu -->
+    <div class="start-menu" id="startMenu">
+        <input type="text" class="start-search" placeholder="Type here to search...">
+        <div class="start-apps-grid">
+            <div class="start-app-item" onclick="openWindow('browser-win'); toggleStart()">
+                <i class="fa-brands fa-edge" style="color: #107c41;"></i><span>Edge</span>
             </div>
-            <div class="flex flex-col items-center gap-2 hover:bg-white/5 p-4 rounded-xl transition cursor-pointer">
-                <i data-lucide="mail" class="w-8 h-8 text-blue-300"></i>
-                <span class="text-xs">Mail</span>
+            <div class="start-app-item" onclick="openWindow('explorer-win'); toggleStart()">
+                <i class="fa-solid fa-folder-open" style="color: #ffb900;"></i><span>Explorer</span>
             </div>
-            <div class="flex flex-col items-center gap-2 hover:bg-white/5 p-4 rounded-xl transition cursor-pointer">
-                <i data-lucide="terminal" class="w-8 h-8 text-green-400"></i>
-                <span class="text-xs">Terminal</span>
-            </div>
-            <div class="flex flex-col items-center gap-2 hover:bg-white/5 p-4 rounded-xl transition cursor-pointer">
-                <i data-lucide="play" class="w-8 h-8 text-red-400"></i>
-                <span class="text-xs">Media</span>
+            <div class="start-app-item" onclick="openWindow('terminal-win'); toggleStart()">
+                <i class="fa-solid fa-terminal" style="color: #333;"></i><span>Terminal</span>
             </div>
         </div>
     </div>
 
-    <!-- Taskbar -->
-    <div class="fixed bottom-0 w-full h-14 glass border-t border-white/10 flex items-center justify-between px-4 z-[100]">
-        <div class="flex items-center gap-4 w-32">
-            <div id="weather" class="text-xs flex items-center gap-2">
-                <i data-lucide="sun" class="w-4 h-4"></i> 72°F
+    <!-- Central Taskbar System -->
+    <div class="taskbar">
+        <div class="taskbar-left"></div>
+        
+        <div class="taskbar-center">
+            <div class="taskbar-icon start-btn" onclick="toggleStart()">
+                <i class="fa-brands fa-windows"></i>
+            </div>
+            <div class="taskbar-icon" id="task-browser" onclick="openWindow('browser-win')">
+                <i class="fa-brands fa-edge" style="color: #107c41;"></i>
+            </div>
+            <div class="taskbar-icon" id="task-explorer" onclick="openWindow('explorer-win')">
+                <i class="fa-solid fa-folder-open" style="color: #ffb900;"></i>
+            </div>
+            <div class="taskbar-icon" id="task-terminal" onclick="openWindow('terminal-win')">
+                <i class="fa-solid fa-terminal" style="color: #555;"></i>
             </div>
         </div>
 
-        <div class="flex items-center gap-2">
-            <button onclick="toggleStart()" class="app-icon p-2 hover:bg-white/10 rounded-lg transition duration-200">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Windows_logo_-_2021.svg" class="w-6 h-6" alt="Start">
-            </button>
-            <div class="w-[1px] h-6 bg-white/10 mx-1"></div>
-            <button onclick="toggleWindow('browser')" class="app-icon p-2 hover:bg-white/10 rounded-lg transition">
-                <i data-lucide="globe" class="w-6 h-6 text-blue-400"></i>
-            </button>
-            <button class="app-icon p-2 hover:bg-white/10 rounded-lg transition">
-                <i data-lucide="message-square" class="w-6 h-6 text-purple-400"></i>
-            </button>
-        </div>
-
-        <div class="flex items-center gap-4 w-32 justify-end text-xs">
-            <div class="text-right">
-                <div id="clock">12:00 PM</div>
-                <div>5/9/2026</div>
+        <div class="taskbar-right">
+            <div class="system-tray-icons">
+                <i class="fa-solid fa-wifi"></i>
+                <i class="fa-solid fa-volume-high"></i>
+                <i class="fa-solid fa-battery-three-quarters"></i>
             </div>
-            <i data-lucide="wifi" class="w-4 h-4"></i>
+            <div class="time-widget">
+                <div id="current-time">12:00 PM</div>
+                <div id="current-date">5/16/2026</div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Initialize Icons
-        lucide.createIcons();
+        let highestZ = 100;
 
-        // Toggle Start Menu
+        // --- Start Menu Automation ---
         function toggleStart() {
-            const menu = document.getElementById('start-menu');
+            const menu = document.getElementById('startMenu');
             menu.classList.toggle('open');
         }
 
-        // Simple Window Toggle
-        function toggleWindow(id) {
-            const win = document.getElementById(`window-${id}`);
-            if(win) {
-                win.classList.toggle('hidden');
-                // Close start menu if opening window
-                document.getElementById('start-menu').classList.remove('open');
+        // Close menu when clicking desktop environment
+        document.getElementById('desktop').addEventListener('click', () => {
+            document.getElementById('startMenu').classList.remove('open');
+        });
+
+        // --- Window Display Controls ---
+        function openWindow(id) {
+            const win = document.getElementById(id);
+            highestZ++;
+            win.style.zIndex = highestZ;
+            win.classList.add('active');
+            
+            // Map running dots onto taskbar icon
+            const type = id.split('-')[0];
+            document.getElementById(`task-${type}`).classList.add('running', 'active-window');
+        }
+
+        function closeWindow(id) {
+            const win = document.getElementById(id);
+            win.classList.remove('active');
+            const type = id.split('-')[0];
+            document.getElementById(`task-${type}`).classList.remove('running', 'active-window');
+        }
+
+        function minimizeWindow(id) {
+            const win = document.getElementById(id);
+            win.classList.remove('active');
+            const type = id.split('-')[0];
+            document.getElementById(`task-${type}`).classList.remove('active-window');
+        }
+
+        function maximizeWindow(id) {
+            document.getElementById(id).classList.toggle('maximized');
+        }
+
+        // --- Window Fluid Draggability Script ---
+        function dragWindow(el) {
+            const win = el.parentElement;
+            highestZ++;
+            win.style.zIndex = highestZ;
+            
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            el.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                if(win.classList.contains('maximized')) return;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                win.style.top = (win.offsetTop - pos2) + "px";
+                win.style.left = (win.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
             }
         }
 
-        // Live Clock
+        // --- Complete Native Terminal Logic ---
+        function handleTerminal(e) {
+            if (e.key === 'Enter') {
+                const input = e.target;
+                const cmd = input.value.trim().toLowerCase();
+                const out = document.getElementById('terminal-output');
+                
+                let reply = '';
+                if (cmd === 'help') {
+                    reply = 'Available Commands: help, clear, date, systeminfo, exit';
+                } else if (cmd === 'date') {
+                    reply = new Date().toString();
+                } else if (cmd === 'systeminfo') {
+                    reply = 'OS Name: Windows 11 Web Replica\nOS Version: 2026.1.0\nSystem Architecture: Virtual x64 browser core';
+                } else if (cmd === 'clear') {
+                    out.innerHTML = '';
+                } else if (cmd === 'exit') {
+                    closeWindow('terminal-win');
+                    input.value = '';
+                    return;
+                } else if (cmd !== '') {
+                    reply = `'${cmd}' is not recognized as an internal or external command.`;
+                }
+
+                if(cmd !== 'clear') {
+                    out.innerHTML += `<div class="terminal-line"><span class="terminal-prompt">PS C:\\Users\\VercelUser&gt;</span> ${input.value}</div>`;
+                    if(reply) {
+                        out.innerHTML += `<div class="terminal-line">${reply.replace(/\n/g, '<br>')}</div>`;
+                    }
+                }
+                input.value = '';
+                const body = out.parentElement;
+                body.scrollTop = body.scrollHeight;
+            }
+        }
+
+        // --- Live Clock Utility ---
         function updateClock() {
             const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('current-time').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('current-date').innerText = now.toLocaleDateString();
         }
         setInterval(updateClock, 1000);
         updateClock();

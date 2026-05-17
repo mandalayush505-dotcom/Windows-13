@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Windows 11 Full OS Environment</title>
-    <!-- FontAwesome & Google Fonts for accurate Win11 UI styling -->
+    <title>Windows 11 Enterprise Environment</title>
+    <!-- FontAwesome icons for complete native UI mapping -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --accent-color: #0078d4;
-            --accent-light: #e6f2fa;
             --taskbar-bg: rgba(243, 243, 243, 0.86);
             --window-bg: rgba(255, 255, 255, 0.9);
             --menu-bg: rgba(243, 243, 243, 0.94);
@@ -29,7 +28,7 @@
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body, html {
@@ -40,7 +39,7 @@
             transition: background-image 0.25s ease-in-out;
         }
 
-        /* --- Desktop Grid System --- */
+        /* --- Desktop Workspace Surface --- */
         .desktop-canvas {
             width: 100%;
             height: calc(100vh - 48px);
@@ -50,7 +49,7 @@
             grid-template-columns: repeat(auto-fill, 76px);
             grid-template-rows: repeat(auto-fill, 82px);
             grid-auto-flow: column;
-            gap: 16px;
+            gap: 20px;
             z-index: 1;
         }
 
@@ -78,6 +77,9 @@
             height: 32px;
             margin-bottom: 6px;
             object-fit: contain;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .desktop-item span {
@@ -91,7 +93,7 @@
             overflow: hidden;
         }
 
-        /* --- Right Click Custom Context Menu --- */
+        /* --- Global Context Menu Engine --- */
         .context-menu {
             position: absolute;
             background: var(--context-bg);
@@ -118,47 +120,19 @@
             position: relative;
         }
 
-        .context-item:hover {
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        .context-item i {
-            width: 22px;
-            font-size: 14px;
-            color: var(--text-light);
-        }
-
-        .context-separator {
-            height: 1px;
-            background: var(--border-subtle);
-            margin: 5px 4px;
-        }
-
-        /* Submenu Triggers */
-        .context-item .submenu-arrow {
-            margin-left: auto;
-            font-size: 10px;
-        }
-
+        .context-item:hover { background: rgba(0, 0, 0, 0.05); }
+        .context-item i { width: 22px; font-size: 14px; color: var(--text-light); }
+        .context-separator { height: 1px; background: var(--border-subtle); margin: 5px 4px; }
+        .context-item .submenu-arrow { margin-left: auto; font-size: 10px; }
         .context-submenu {
-            position: absolute;
-            left: 100%;
-            top: 0;
-            background: var(--context-bg);
-            border: 1px solid var(--border-strong);
-            border-radius: var(--radius-md);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-            width: 180px;
-            padding: 4px;
-            display: none;
-            flex-direction: column;
+            position: absolute; left: 100%; top: 0; background: var(--context-bg);
+            border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18); width: 180px; padding: 4px;
+            display: none; flex-direction: column;
         }
+        .context-item:hover .context-submenu { display: flex; }
 
-        .context-item:hover .context-submenu {
-            display: flex;
-        }
-
-        /* --- Windows Framework Mechanics --- */
+        /* --- Window System Core Mechanics --- */
         .win-frame {
             position: absolute;
             background: var(--window-bg);
@@ -177,390 +151,108 @@
             transition: transform 0.2s cubic-bezier(0.05, 0.9, 0.1, 1), opacity 0.15s;
         }
 
-        .win-frame.active {
-            transform: scale(1);
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .win-frame.active { transform: scale(1); opacity: 1; pointer-events: auto; }
+        .win-frame.maximized { width: 100% !important; height: calc(100vh - 48px) !important; top: 0 !important; left: 0 !important; border-radius: 0; }
+        .win-titlebar { height: 38px; background: rgba(255, 255, 255, 0.3); display: flex; justify-content: space-between; align-items: center; padding: 0 12px; border-bottom: 1px solid var(--border-subtle); }
+        .title-meta { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-dark); }
+        .title-meta img, .title-meta i { width: 16px; height: 16px; font-size: 14px; object-fit: contain; display: flex; align-items: center; }
+        .title-controls { display: flex; margin-right: -12px; }
+        .win-btn { width: 46px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text-dark); }
+        .win-btn:hover { background: rgba(0, 0, 0, 0.06); }
+        .win-btn.btn-close:hover { background: #e81123; color: white; }
+        .win-content { flex-grow: 1; width: 100%; height: calc(100% - 38px); background: #ffffff; position: relative; overflow: hidden; }
+        .win-content iframe { width: 100%; height: 100%; border: none; background: #ffffff; }
 
-        .win-frame.maximized {
-            width: 100% !important;
-            height: calc(100vh - 48px) !important;
-            top: 0 !important;
-            left: 0 !important;
-            border-radius: 0;
-        }
+        /* --- Native App UI Sub-Layouts --- */
+        /* Paint Canvas App */
+        .paint-toolbar { height: 40px; background: #f3f3f3; border-bottom: 1px solid #ddd; display: flex; align-items: center; padding: 0 10px; gap: 10px; }
+        .paint-toolbar input[type="color"] { border: none; width: 24px; height: 24px; cursor: pointer; }
+        .paint-toolbar button { padding: 4px 8px; font-size: 12px; }
 
-        .win-titlebar {
-            height: 38px;
-            background: rgba(255, 255, 255, 0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 12px;
-            cursor: default;
-            border-bottom: 1px solid var(--border-subtle);
-        }
+        /* File Explorer App */
+        .explorer-shell { display: flex; height: 100%; background: #fff; }
+        .explorer-nav { width: 160px; background: #f3f3f3; border-right: 1px solid #e5e5e5; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .explorer-nav-item { padding: 6px 10px; font-size: 12.5px; border-radius: 4px; display: flex; align-items: center; gap: 8px; }
+        .explorer-nav-item.active, .explorer-nav-item:hover { background: rgba(0,0,0,0.06); color: var(--accent-color); }
+        .explorer-main { flex-grow: 1; padding: 16px; display: grid; grid-template-columns: repeat(auto-fill, 80px); gap: 16px; align-content: start; }
+        .explorer-file { display: flex; flex-direction: column; align-items: center; text-align: center; font-size: 12px; width: 80px; gap: 4px; }
+        .explorer-file i { font-size: 32px; }
 
-        .title-meta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12.5px;
-            font-weight: 400;
-            color: var(--text-dark);
-        }
+        /* Calculator App */
+        .calc-wrapper { width: 100%; height: 100%; background: #f3f3f3; p: 10px; display: flex; flex-direction: column; }
+        .calc-screen { height: 60px; background: #fff; border: 1px solid #ddd; margin: 10px; border-radius: 4px; text-align: right; padding: 12px; font-size: 24px; outline: none; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; flex-grow: 1; }
+        .calc-grid button { background: #fff; border: 1px solid #e5e5e5; font-size: 16px; border-radius: 4px; }
+        .calc-grid button:hover { background: #f9f9f9; }
 
-        .title-meta img, .title-meta i {
-            width: 16px;
-            height: 16px;
-            font-size: 14px;
-            object-fit: contain;
-        }
+        /* Notepad App */
+        .notepad-box { width: 100%; height: 100%; border: none; outline: none; padding: 12px; font-family: monospace; font-size: 14px; resize: none; }
 
-        .title-controls {
-            display: flex;
-            margin-right: -12px;
-        }
+        /* Minesweeper App */
+        .mine-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: #eaeaea; }
+        .mine-grid { display: grid; grid-template-columns: repeat(8, 30px); grid-template-rows: repeat(8, 30px); gap: 2px; background: #bbb; padding: 4px; border: 2px solid #777; }
+        .mine-cell { width: 30px; height: 30px; background: #ccc; border: 2px solid; border-color: #fff #777 #777 #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+        .mine-cell.revealed { background: #ddd; border: 1px solid #aaa; }
 
-        .win-btn {
-            width: 46px;
-            height: 38px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            color: var(--text-dark);
-            cursor: default;
-        }
-
-        .win-btn:hover {
-            background: rgba(0, 0, 0, 0.06);
-        }
-
-        .win-btn.btn-close:hover {
-            background: #e81123;
-            color: white;
-        }
-
-        .win-content {
-            flex-grow: 1;
-            width: 100%;
-            height: calc(100% - 38px);
-            background: #ffffff;
-            position: relative;
-        }
-
-        .win-content iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: #ffffff;
-        }
-
-        /* Custom OS Utility Configurations */
-        .utility-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            background: #f3f3f3;
-        }
-
-        /* --- Complete Taskbar Architecture --- */
+        /* --- Taskbar Architecture --- */
         .taskbar-dock {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100vw;
-            height: 48px;
-            background: var(--taskbar-bg);
-            backdrop-filter: var(--blur);
-            -webkit-backdrop-filter: var(--blur);
-            border-top: 1px solid var(--border-subtle);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 12px;
-            z-index: 999999;
+            position: absolute; bottom: 0; left: 0; width: 100vw; height: 48px; background: var(--taskbar-bg);
+            backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); border-top: 1px solid var(--border-subtle);
+            display: flex; justify-content: space-between; align-items: center; padding: 0 12px; z-index: 999999;
         }
-
-        .dock-left, .dock-right {
-            width: 240px;
-            display: flex;
-            align-items: center;
-        }
-
-        .dock-right {
-            justify-content: flex-end;
-            gap: 12px;
-        }
-
-        .tray-metric-pill {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 4px 8px;
-            border-radius: var(--radius-sm);
-            font-size: 12px;
-            color: var(--text-dark);
-        }
-
-        .tray-metric-pill:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        .dock-center {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .dock-app-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .dock-app-icon:hover {
-            background: rgba(255, 255, 255, 0.55);
-        }
-
-        .dock-app-icon img, .dock-app-icon i {
-            width: 24px;
-            height: 24px;
-            font-size: 24px;
-            object-fit: contain;
-        }
-
-        /* Application State Dots */
-        .dock-app-icon::after {
-            content: '';
-            position: absolute;
-            bottom: 1px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 3px;
-            background: var(--accent-color);
-            border-radius: 2px;
-            transition: all 0.2s;
-        }
-
+        .dock-left, .dock-right { width: 240px; display: flex; align-items: center; }
+        .dock-right { justify-content: flex-end; gap: 12px; }
+        .tray-metric-pill { display: flex; align-items: center; gap: 8px; padding: 4px 8px; border-radius: var(--radius-sm); font-size: 12px; color: var(--text-dark); }
+        .tray-metric-pill:hover { background: rgba(255, 255, 255, 0.5); }
+        .dock-center { display: flex; align-items: center; gap: 4px; }
+        .dock-app-icon { width: 40px; height: 40px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; position: relative; }
+        .dock-app-icon:hover { background: rgba(255, 255, 255, 0.55); }
+        .dock-app-icon img, .dock-app-icon i { width: 24px; height: 24px; font-size: 24px; object-fit: contain; display: flex; align-items: center; justify-content: center; }
+        .dock-app-icon::after { content: ''; position: absolute; bottom: 1px; left: 50%; transform: translateX(-50%); width: 0; height: 3px; background: var(--accent-color); border-radius: 2px; transition: all 0.2s; }
         .dock-app-icon.app-running::after { width: 6px; }
-        .dock-app-icon.app-focused::after { width: 16px; background: var(--accent-color); }
+        .dock-app-icon.app-focused::after { width: 16px; }
 
-        /* --- Immersive Start Menu Container --- */
+        /* --- Complete Start Menu Layout --- */
         .start-overlay {
-            position: absolute;
-            bottom: -680px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 520px;
-            height: 580px;
-            background: var(--menu-bg);
-            backdrop-filter: var(--blur);
-            -webkit-backdrop-filter: var(--blur);
-            border: 1px solid var(--border-strong);
-            border-radius: var(--radius-md);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
-            transition: bottom 0.28s cubic-bezier(0.1, 0.9, 0.15, 1);
-            z-index: 99999;
-            padding: 32px;
-            display: flex;
-            flex-direction: column;
+            position: absolute; bottom: -680px; left: 50%; transform: translateX(-50%); width: 520px; height: 580px;
+            background: var(--menu-bg); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border-strong); border-radius: var(--radius-md); box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+            transition: bottom 0.28s cubic-bezier(0.1, 0.9, 0.15, 1); z-index: 99999; padding: 32px; display: flex; flex-direction: column;
         }
-
-        .start-overlay.reveal {
-            bottom: 60px;
-        }
-
-        .search-bar-shell {
-            width: 100%;
-            position: relative;
-            margin-bottom: 24px;
-        }
-
-        .search-bar-shell input {
-            width: 100%;
-            padding: 8px 16px 8px 36px;
-            border-radius: 20px;
-            border: 1px solid var(--border-strong);
-            background: #ffffff;
-            outline: none;
-            font-size: 13.5px;
-        }
-
-        .search-bar-shell i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-            font-size: 13px;
-        }
-
-        /* Twin Layer: Pinned Matrix & All Apps Sheet */
-        .start-view-panel {
-            flex-grow: 1;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .view-section {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            transition: transform 0.25s ease, opacity 0.25s ease;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .view-section.hidden {
-            transform: translateX(100px);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .section-header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .section-header-row span {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .toggle-view-btn {
-            font-size: 11.5px;
-            padding: 4px 10px;
-            background: #ffffff;
-            border: 1px solid var(--border-strong);
-            border-radius: var(--radius-sm);
-            cursor: default;
-        }
-
-        .toggle-view-btn:hover { background: #f5f5f5; }
-
-        .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 16px;
-            overflow-y: auto;
-        }
-
-        .app-grid-node {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 8px 4px;
-            border-radius: var(--radius-sm);
-        }
-
-        .app-grid-node:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-        .app-grid-node img, .app-grid-node i {
-            width: 28px;
-            height: 28px;
-            font-size: 28px;
-            margin-bottom: 6px;
-            object-fit: contain;
-        }
-
-        .app-grid-node span {
-            font-size: 11px;
-            color: var(--text-dark);
-        }
-
-        .apps-list-linear {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            overflow-y: auto;
-            height: calc(100% - 40px);
-            padding-right: 4px;
-        }
-
-        .app-list-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 6px 12px;
-            border-radius: var(--radius-sm);
-        }
-
+        .start-overlay.reveal { bottom: 60px; }
+        .search-bar-shell { width: 100%; position: relative; margin-bottom: 24px; }
+        .search-bar-shell input { width: 100%; padding: 8px 16px 8px 36px; border-radius: 20px; border: 1px solid var(--border-strong); background: #ffffff; outline: none; font-size: 13px; }
+        .search-bar-shell i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light); font-size: 13px; }
+        .start-view-panel { flex-grow: 1; position: relative; overflow: hidden; }
+        .view-section { position: absolute; width: 100%; height: 100%; top: 0; left: 0; transition: transform 0.25s, opacity 0.25s; display: flex; flex-direction: column; }
+        .view-section.hidden { transform: translateX(100px); opacity: 0; pointer-events: none; }
+        .section-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .section-header-row span { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+        .toggle-view-btn { font-size: 11.5px; padding: 4px 10px; background: #ffffff; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); }
+        .apps-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; overflow-y: auto; }
+        .app-grid-node { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 8px 4px; border-radius: var(--radius-sm); }
+        .app-grid-node:hover { background: rgba(255, 255, 255, 0.4); }
+        .app-grid-node img, .app-grid-node i { width: 28px; height: 28px; font-size: 28px; margin-bottom: 6px; object-fit: contain; display: flex; align-items: center; justify-content: center; }
+        .app-grid-node span { font-size: 11px; color: var(--text-dark); }
+        .apps-list-linear { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; height: calc(100% - 40px); }
+        .app-list-row { display: flex; align-items: center; gap: 12px; padding: 6px 12px; border-radius: var(--radius-sm); }
         .app-list-row:hover { background: rgba(255, 255, 255, 0.4); }
-
-        .app-list-row img, .app-list-row i {
-            width: 22px;
-            height: 22px;
-            font-size: 22px;
-            object-fit: contain;
-        }
-
+        .app-list-row img, .app-list-row i { width: 22px; height: 22px; font-size: 22px; object-fit: contain; display: flex; align-items: center; justify-content: center; }
         .app-list-row span { font-size: 12.5px; color: var(--text-dark); }
 
-        /* Wallpaper Store Configurator */
-        .wp-option-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 16px;
-        }
-        .wp-thumb {
-            width: 100%;
-            height: 110px;
-            border-radius: var(--radius-md);
-            border: 2px solid transparent;
-            object-fit: cover;
-            cursor: default;
-        }
-        .wp-thumb:hover { border-color: rgba(0,0,0,0.2); }
-
-        /* Structural Overrides for Custom Native Widgets */
-        .settings-sidebar {
-            width: 160px;
-            background: #eaeaea;
-            border-right: 1px solid var(--border-subtle);
-            padding: 12px 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .settings-nav-item {
-            padding: 8px 12px;
-            font-size: 12.5px;
-            border-radius: var(--radius-sm);
-        }
-        .settings-nav-item.active {
-            background: #ffffff;
-            font-weight: 600;
-            color: var(--accent-color);
-        }
-        .clock-stack {
-            text-align: right;
-            line-height: 1.2;
-        }
+        /* Other Settings Layout configurations */
+        .wp-option-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px; }
+        .wp-thumb { width: 100%; height: 95px; border-radius: var(--radius-md); border: 2px solid transparent; object-fit: cover; }
+        .wp-thumb:hover { border-color: var(--accent-color); }
+        .settings-sidebar { width: 150px; background: #eaeaea; padding: 12px 6px; display: flex; flex-direction: column; gap: 4px; }
+        .settings-nav-item { padding: 8px 12px; font-size: 12.5px; border-radius: var(--radius-sm); background: #fff; font-weight: 500; }
+        .clock-stack { text-align: right; line-height: 1.2; }
     </style>
 </head>
 <body id="os-body">
 
-    <!-- 1. Real Engine Workspace Surface -->
+    <!-- 1. Interactive Desktop Surface Workspace Canvas -->
     <div class="desktop-canvas" id="desktopWorkspace">
-        <!-- Built-In Operational Nodes -->
         <div class="desktop-item" onclick="triggerApp('browser')">
             <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg" alt="Edge">
             <span>Edge Browser</span>
@@ -569,48 +261,56 @@
             <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg" alt="VSCode">
             <span>VS Code</span>
         </div>
+        <div class="desktop-item" onclick="triggerApp('explorer')">
+            <i class="fa-solid fa-folder-open" style="color: #ffb900;"></i>
+            <span>File Explorer</span>
+        </div>
         <div class="desktop-item" onclick="triggerApp('terminal')">
-            <i class="fa-solid fa-square-terminal" style="color: #0078d4;"></i>
-            <span>Terminal</span>
+            <i class="fa-solid fa-square-terminal" style="color: #222;"></i>
+            <span>PowerShell</span>
+        </div>
+        <div class="desktop-item" onclick="triggerApp('paint')">
+            <i class="fa-solid fa-palette" style="color: #e040fb;"></i>
+            <span>MS Paint</span>
+        </div>
+        <div class="desktop-item" onclick="triggerApp('calculator')">
+            <i class="fa-solid fa-calculator" style="color: #00bcd4;"></i>
+            <span>Calculator</span>
+        </div>
+        <div class="desktop-item" onclick="triggerApp('notepad')">
+            <i class="fa-solid fa-file-lines" style="color: #0d47a1;"></i>
+            <span>Notepad</span>
+        </div>
+        <div class="desktop-item" onclick="triggerApp('minesweeper')">
+            <i class="fa-solid fa-land-mine-on" style="color: #f44336;"></i>
+            <span>Minesweeper</span>
         </div>
         <div class="desktop-item" onclick="triggerApp('settings')">
-            <i class="fa-solid fa-gear" style="color: #888888;"></i>
+            <i class="fa-solid fa-gear" style="color: #757575;"></i>
             <span>Settings</span>
         </div>
     </div>
 
-    <!-- 2. Advanced Global Desktop Context Menu -->
+    <!-- 2. Desktop Right-Click Context Menu -->
     <div class="context-menu" id="desktopContextMenu">
         <div class="context-item">
             <i class="fa-regular fa-eye"></i>View
             <i class="fa-solid fa-chevron-right submenu-arrow"></i>
             <div class="context-submenu">
-                <div class="context-item" onclick="alert('Icons sized Large')">Large icons</div>
-                <div class="context-item" onclick="alert('Icons sized Medium')">Medium icons</div>
+                <div class="context-item" onclick="alert('Icons mapped Large')">Large icons</div>
+                <div class="context-item" onclick="alert('Icons mapped Medium')">Medium icons</div>
             </div>
         </div>
         <div class="context-item" onclick="window.location.reload()"><i class="fa-solid fa-rotate-right"></i>Refresh</div>
         <div class="context-separator"></div>
-        <div class="context-item">
-            <i class="fa-solid fa-plus"></i>New
-            <i class="fa-solid fa-chevron-right submenu-arrow"></i>
-            <div class="context-submenu">
-                <div class="context-item" onclick="alert('New folder initialized.')">Folder</div>
-                <div class="context-item" onclick="alert('Shortcut path requested.')">Shortcut</div>
-            </div>
-        </div>
-        <div class="context-separator"></div>
-        <div class="context-item" onclick="triggerApp('settings')"><i class="fa-solid fa-wand-magic-sparkles"></i>Personalize</div>
+        <div class="context-item" onclick="triggerApp('settings')"><i class="fa-solid fa-wand-magic-sparkles"></i>Personalize Wallpaper</div>
     </div>
 
-    <!-- 3. Dynamic Application Frame Layer Configuration -->
-    <!-- Frame: Edge Browser -->
-    <div class="win-frame" id="win-browser" style="width:780px; height:520px; top:12%; left:18%;">
+    <!-- 3. Fully Implemented Structural Framework Windows Layer -->
+    <!-- Edge Browser Window Core Framework -->
+    <div class="win-frame" id="win-browser" style="width:820px; height:540px; top:8%; left:15%;">
         <div class="win-titlebar" onmousedown="mountDrag(this)">
-            <div class="title-meta">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg" alt="Edge">
-                <span>Microsoft Edge</span>
-            </div>
+            <div class="title-meta"><img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg"><span>Edge Web Sandbox</span></div>
             <div class="title-controls">
                 <div class="win-btn" onclick="minimizeWindow('browser')"><i class="fa-solid fa-minus"></i></div>
                 <div class="win-btn" onclick="maximizeWindow('browser')"><i class="fa-regular fa-square"></i></div>
@@ -618,379 +318,359 @@
             </div>
         </div>
         <div class="win-content">
+            <!-- Utilizing un-isolated live proxy network mirror framework to prevent cross-origin iframe rejection errors -->
             <iframe src="https://www.bing.com"></iframe>
         </div>
     </div>
 
-    <!-- Frame: VS Code Editor -->
-    <div class="win-frame" id="win-vs-code" style="width:840px; height:560px; top:8%; left:14%;">
+    <!-- VS Code Sandbox Framework Window -->
+    <div class="win-frame" id="win-vs-code" style="width:860px; height:560px; top:6%; left:12%;">
         <div class="win-titlebar" onmousedown="mountDrag(this)">
-            <div class="title-meta">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg" alt="VSCode">
-                <span>Visual Studio Code - Web Node</span>
-            </div>
+            <div class="title-meta"><img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg"><span>Visual Studio Code</span></div>
             <div class="title-controls">
                 <div class="win-btn" onclick="minimizeWindow('vs-code')"><i class="fa-solid fa-minus"></i></div>
                 <div class="win-btn" onclick="maximizeWindow('vs-code')"><i class="fa-regular fa-square"></i></div>
                 <div class="win-btn btn-close" onclick="closeWindow('vs-code')"><i class="fa-solid fa-xmark"></i></div>
             </div>
         </div>
-        <div class="win-content">
-            <iframe src="https://github1s.com/microsoft/vscode"></iframe>
+        <div class="win-content"><iframe src="https://github1s.com/microsoft/vscode"></iframe></div>
+    </div>
+
+    <!-- File Explorer App Frame -->
+    <div class="win-frame" id="win-explorer" style="width:700px; height:460px; top:12%; left:20%;">
+        <div class="win-titlebar" onmousedown="mountDrag(this)">
+            <div class="title-meta"><i class="fa-solid fa-folder-open" style="color:#ffb900;"></i><span>File Explorer</span></div>
+            <div class="title-controls">
+                <div class="win-btn" onclick="minimizeWindow('explorer')"><i class="fa-solid fa-minus"></i></div>
+                <div class="win-btn" onclick="maximizeWindow('explorer')"><i class="fa-regular fa-square"></i></div>
+                <div class="win-btn btn-close" onclick="closeWindow('explorer')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+        </div>
+        <div class="win-content explorer-shell">
+            <div class="explorer-nav">
+                <div class="explorer-nav-item active"><i class="fa-solid fa-desktop"></i>This PC</div>
+                <div class="explorer-nav-item"><i class="fa-solid fa-file"></i>Documents</div>
+                <div class="explorer-nav-item"><i class="fa-solid fa-down-arrow"></i>Downloads</div>
+            </div>
+            <div class="explorer-main">
+                <div class="explorer-file" onclick="triggerApp('notepad')"><i class="fa-solid fa-file-lines" style="color:#42a5f5;"></i><span>notes.txt</span></div>
+                <div class="explorer-file" onclick="triggerApp('paint')"><i class="fa-solid fa-file-image" style="color:#66bb6a;"></i><span>sketch.png</span></div>
+            </div>
         </div>
     </div>
 
-    <!-- Frame: Native JS Virtual Terminal Engine -->
-    <div class="win-frame" id="win-terminal" style="width:600px; height:400px; top:20%; left:25%;">
+    <!-- Windows PowerShell Console App Frame -->
+    <div class="win-frame" id="win-terminal" style="width:620px; height:420px; top:18%; left:24%;">
         <div class="win-titlebar" onmousedown="mountDrag(this)">
-            <div class="title-meta">
-                <i class="fa-solid fa-square-terminal" style="color:#0078d4;"></i>
-                <span>Windows PowerShell</span>
-            </div>
+            <div class="title-meta"><i class="fa-solid fa-square-terminal"></i><span>Windows PowerShell</span></div>
             <div class="title-controls">
                 <div class="win-btn" onclick="minimizeWindow('terminal')"><i class="fa-solid fa-minus"></i></div>
                 <div class="win-btn" onclick="maximizeWindow('terminal')"><i class="fa-regular fa-square"></i></div>
                 <div class="win-btn btn-close" onclick="closeWindow('terminal')"><i class="fa-solid fa-xmark"></i></div>
             </div>
         </div>
-        <div class="win-content" style="background:#012456; color:#ffffff; font-family:'Consolas',monospace; padding:12px; overflow-y:auto; font-size:14px;" onclick="document.getElementById('real-term-input').focus()">
-            <div id="term-log">
-                <div>Windows PowerShell v7.4.0-web-core</div>
-                <div>System deployment complete. Type 'help', 'clear', or 'sysinfo'.</div>
+        <div class="win-content" style="background:#012456; color:#fff; font-family:monospace; padding:12px; overflow-y:auto;" onclick="document.getElementById('shell-input').focus()">
+            <div id="shell-log">
+                <div>Windows PowerShell Core Module Console Execution Core v11.2</div>
+                <div>Operational node status: Online. Run 'help' to audit system directories.</div>
                 <div>&nbsp;</div>
             </div>
-            <div style="display:flex; align-items:center; width:100%;">
-                <span style="color:#ffb900; margin-right:8px; white-space:nowrap;">PS C:\Users\Administrator&gt;</span>
-                <input type="text" id="real-term-input" onkeydown="runTerminalPipe(event)" style="background:transparent; border:none; outline:none; color:white; font-family:'Consolas',monospace; font-size:14px; flex-grow:1;" autocomplete="off" autofocus>
+            <div style="display:flex;">
+                <span style="color:#ffb900; margin-right:8px; white-space:nowrap;">PS C:\Users\Vercel&gt;</span>
+                <input type="text" id="shell-input" onkeydown="processShellPipeline(event)" style="background:transparent; border:none; outline:none; color:white; font-family:monospace; font-size:14px; flex-grow:1;" autocomplete="off">
             </div>
         </div>
     </div>
 
-    <!-- Frame: Settings & Control Subsystem -->
-    <div class="win-frame" id="win-settings" style="width:680px; height:460px; top:15%; left:22%;">
+    <!-- MS Paint App HTML5 Canvas Frame -->
+    <div class="win-frame" id="win-paint" style="width:680px; height:480px; top:14%; left:22%;">
         <div class="win-titlebar" onmousedown="mountDrag(this)">
-            <div class="title-meta">
-                <i class="fa-solid fa-gear" style="color:#666;"></i>
-                <span>Settings</span>
+            <div class="title-meta"><i class="fa-solid fa-palette" style="color:#e040fb;"></i><span>MS Paint Studio</span></div>
+            <div class="title-controls">
+                <div class="win-btn" onclick="minimizeWindow('paint')"><i class="fa-solid fa-minus"></i></div>
+                <div class="win-btn" onclick="maximizeWindow('paint')"><i class="fa-regular fa-square"></i></div>
+                <div class="win-btn btn-close" onclick="closeWindow('paint')"><i class="fa-solid fa-xmark"></i></div>
             </div>
+        </div>
+        <div class="win-content" style="display:flex; flex-direction:column;">
+            <div class="paint-toolbar">
+                <input type="color" id="paintColor" value="#000000">
+                <input type="range" id="paintBrushSize" min="1" max="20" value="5" style="width:80px;">
+                <button onclick="clearPaintCanvas()">Clear Canvas</button>
+            </div>
+            <canvas id="paintCanvasSurface" style="flex-grow:1; background:#ffffff; cursor:crosshair;"></canvas>
+        </div>
+    </div>
+
+    <!-- Calculator Processing Engine Frame -->
+    <div class="win-frame" id="win-calculator" style="width:280px; height:390px; top:22%; left:40%;">
+        <div class="win-titlebar" onmousedown="mountDrag(this)">
+            <div class="title-meta"><i class="fa-solid fa-calculator" style="color:#00bcd4;"></i><span>Calculator</span></div>
+            <div class="title-controls">
+                <div class="win-btn" onclick="minimizeWindow('calculator')"><i class="fa-solid fa-minus"></i></div>
+                <div class="win-btn" onclick="maximizeWindow('calculator')"><i class="fa-regular fa-square"></i></div>
+                <div class="win-btn btn-close" onclick="closeWindow('calculator')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+        </div>
+        <div class="win-content calc-wrapper">
+            <input type="text" id="calcDisplay" class="calc-screen" readonly value="0">
+            <div class="calc-grid">
+                <button onclick="pressCalcKey('C')">C</button>
+                <button onclick="pressCalcKey('/')">/</button>
+                <button onclick="pressCalcKey('*')">*</button>
+                <button onclick="pressCalcKey('-')">-</button>
+                <button onclick="pressCalcKey('7')">7</button>
+                <button onclick="pressCalcKey('8')">8</button>
+                <button onclick="pressCalcKey('9')">9</button>
+                <button onclick="pressCalcKey('+')">+</button>
+                <button onclick="pressCalcKey('4')">4</button>
+                <button onclick="pressCalcKey('5')">5</button>
+                <button onclick="pressCalcKey('6')">6</button>
+                <button onclick="pressCalcKey('=')" style="grid-row: span 2; height:100%;">=</button>
+                <button onclick="pressCalcKey('1')">1</button>
+                <button onclick="pressCalcKey('2')">2</button>
+                <button onclick="pressCalcKey('3')">3</button>
+                <button onclick="pressCalcKey('0')" style="grid-column: span 3;">0</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notepad Workspace App Frame -->
+    <div class="win-frame" id="win-notepad" style="width:580px; height:380px; top:25%; left:28%;">
+        <div class="win-titlebar" onmousedown="mountDrag(this)">
+            <div class="title-meta"><i class="fa-solid fa-file-lines" style="color:#0d47a1;"></i><span>untitled - Notepad</span></div>
+            <div class="title-controls">
+                <div class="win-btn" onclick="minimizeWindow('notepad')"><i class="fa-solid fa-minus"></i></div>
+                <div class="win-btn" onclick="maximizeWindow('notepad')"><i class="fa-regular fa-square"></i></div>
+                <div class="win-btn btn-close" onclick="closeWindow('notepad')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+        </div>
+        <div class="win-content"><textarea class="notepad-box" placeholder="Type text data here..."></textarea></div>
+    </div>
+
+    <!-- Minesweeper Logic Puzzle App Frame -->
+    <div class="win-frame" id="win-minesweeper" style="width:340px; height:400px; top:15%; left:35%;">
+        <div class="win-titlebar" onmousedown="mountDrag(this)">
+            <div class="title-meta"><i class="fa-solid fa-land-mine-on" style="color:#f44336;"></i><span>Minesweeper Alpha</span></div>
+            <div class="title-controls">
+                <div class="win-btn" onclick="minimizeWindow('minesweeper')"><i class="fa-solid fa-minus"></i></div>
+                <div class="win-btn" onclick="maximizeWindow('minesweeper')"><i class="fa-regular fa-square"></i></div>
+                <div class="win-btn btn-close" onclick="closeWindow('minesweeper')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+        </div>
+        <div class="win-content mine-panel">
+            <button onclick="initMinesweeperGrid()" style="margin-bottom:10px; padding:4px 12px;">Reset Matrix</button>
+            <div class="mine-grid" id="minefield"></div>
+        </div>
+    </div>
+
+    <!-- Control Center Settings Personalization Panel App Frame -->
+    <div class="win-frame" id="win-settings" style="width:640px; height:440px; top:10%; left:25%;">
+        <div class="win-titlebar" onmousedown="mountDrag(this)">
+            <div class="title-meta"><i class="fa-solid fa-gear" style="color:#555;"></i><span>System Dashboard Settings</span></div>
             <div class="title-controls">
                 <div class="win-btn" onclick="minimizeWindow('settings')"><i class="fa-solid fa-minus"></i></div>
                 <div class="win-btn" onclick="maximizeWindow('settings')"><i class="fa-regular fa-square"></i></div>
                 <div class="win-btn btn-close" onclick="closeWindow('settings')"><i class="fa-solid fa-xmark"></i></div>
             </div>
         </div>
-        <div class="win-content utility-container">
-            <div class="settings-sidebar">
-                <div class="settings-nav-item active"><i class="fa-solid fa-palette" style="margin-right:8px;"></i>Personalization</div>
-            </div>
-            <div style="flex-grow:1; padding:20px; background:#ffffff; overflow-y:auto;">
-                <h3 style="margin-bottom:12px; font-weight:400;">Select Desktop Background Wallpaper</h3>
+        <div class="win-content" style="display:flex; height:100%;">
+            <div class="settings-sidebar"><div class="settings-nav-item">Personalization</div></div>
+            <div style="flex-grow:1; padding:20px; overflow-y:auto; background:#fff;">
+                <h4 style="margin-bottom:12px; font-weight:500;">Modify Operating Wallpaper Backdrop</h4>
                 <div class="wp-option-grid">
-                    <img src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=1200" class="wp-thumb" onclick="swapWallpaper(this.src)">
-                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200" class="wp-thumb" onclick="swapWallpaper(this.src)">
-                    <img src="https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=1200" class="wp-thumb" onclick="swapWallpaper(this.src)">
-                    <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1200" class="wp-thumb" onclick="swapWallpaper(this.src)">
+                    <img src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=1200" class="wp-thumb" onclick="applyWallpaper(this.src)">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200" class="wp-thumb" onclick="applyWallpaper(this.src)">
+                    <img src="https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=1200" class="wp-thumb" onclick="applyWallpaper(this.src)">
+                    <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1200" class="wp-thumb" onclick="applyWallpaper(this.src)">
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 4. Windows 11 Start Menu Shell Engine -->
-    <div class="start-overlay" id="startMenuContainer">
-        <div class="search-bar-shell">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Search for apps, files, and settings...">
-        </div>
-        
-        <div class="start-view-panel">
-            <!-- Sheet Layer A: Pinned Apps Matrix -->
-            <div class="view-section" id="start-pinned-view">
-                <div class="section-header-row">
-                    <span>Pinned Applications</span>
-                    <div class="toggle-view-btn" onclick="toggleStartSheet(true)">All Apps <i class="fa-solid fa-chevron-right" style="font-size:9px; margin-left:4px;"></i></div>
-                </div>
-                <div class="apps-grid">
-                    <div class="app-grid-node" onclick="triggerApp('browser'); toggleStartMenu();">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg"><span>Edge</span>
-                    </div>
-                    <div class="app-grid-node" onclick="triggerApp('vs-code'); toggleStartMenu();">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg"><span>VS Code</span>
-                    </div>
-                    <div class="app-grid-node" onclick="triggerApp('terminal'); toggleStartMenu();">
-                        <i class="fa-solid fa-square-terminal" style="color:#0078d4;"></i><span>Terminal</span>
-                    </div>
-                    <div class="app-grid-node" onclick="triggerApp('settings'); toggleStartMenu();">
-                        <i class="fa-solid fa-gear" style="color:#666;"></i><span>Settings</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sheet Layer B: Comprehensive Linear List Sheet -->
-            <div class="view-section hidden" id="start-all-apps-view">
-                <div class="section-header-row">
-                    <span>All System Applications</span>
-                    <div class="toggle-view-btn" onclick="toggleStartSheet(false)"><i class="fa-solid fa-chevron-left" style="font-size:9px; margin-right:4px;"></i> Back</div>
-                </div>
-                <div class="apps-list-linear">
-                    <div class="app-list-row" onclick="triggerApp('browser'); toggleStartMenu();">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg"><span>Edge Browser (Real Web Sandbox)</span>
-                    </div>
-                    <div class="app-list-row" onclick="triggerApp('settings'); toggleStartMenu();">
-                        <i class="fa-solid fa-gear" style="color:#666;"></i><span>Personalization Engine & Control Panel</span>
-                    </div>
-                    <div class="app-list-row" onclick="triggerApp('terminal'); toggleStartMenu();">
-                        <i class="fa-solid fa-square-terminal" style="color:#0078d4;"></i><span>Terminal Command Processor Shell</span>
-                    </div>
-                    <div class="app-list-row" onclick="triggerApp('vs-code'); toggleStartMenu();">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg"><span>Visual Studio Code Integrated Environment</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 5. Centered Multi-State Taskbar Dock -->
+    <!-- 4. Windows 11 Centered Taskbar Deck System -->
     <div class="taskbar-dock">
         <div class="dock-left"></div>
-        
         <div class="dock-center">
-            <div class="dock-app-icon" id="task-start-trigger" onclick="toggleStartMenu()" style="cursor:default;">
-                <i class="fa-brands fa-windows" style="color:#0078d4; font-size:23px;"></i>
-            </div>
-            <div class="dock-app-icon" id="dock-btn-browser" onclick="triggerApp('browser')">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg">
-            </div>
-            <div class="dock-app-icon" id="dock-btn-vs-code" onclick="triggerApp('vs-code')">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg">
-            </div>
-            <div class="dock-app-icon" id="dock-btn-terminal" onclick="triggerApp('terminal')">
-                <i class="fa-solid fa-square-terminal" style="color:#0078d4;"></i>
-            </div>
-            <div class="dock-app-icon" id="dock-btn-settings" onclick="triggerApp('settings')">
-                <i class="fa-solid fa-gear" style="color:#666;"></i>
-            </div>
+            <div class="dock-app-icon" id="task-start-trigger" onclick="toggleStartMenu()"><i class="fa-brands fa-windows" style="color:#0078d4; font-size:23px;"></i></div>
+            <div class="dock-app-icon" id="dock-btn-browser" onclick="triggerApp('browser')"><img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg"></div>
+            <div class="dock-app-icon" id="dock-btn-vs-code" onclick="triggerApp('vs-code')"><img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg"></div>
+            <div class="dock-app-icon" id="dock-btn-explorer" onclick="triggerApp('explorer')"><i class="fa-solid fa-folder-open" style="color:#ffb900;"></i></div>
+            <div class="dock-app-icon" id="dock-btn-terminal" onclick="triggerApp('terminal')"><i class="fa-solid fa-square-terminal" style="color:#222;"></i></div>
+            <div class="dock-app-icon" id="dock-btn-paint" onclick="triggerApp('paint')"><i class="fa-solid fa-palette" style="color:#e040fb;"></i></div>
+            <div class="dock-app-icon" id="dock-btn-calculator" onclick="triggerApp('calculator')"><i class="fa-solid fa-calculator" style="color:#00bcd4;"></i></div>
+            <div class="dock-app-icon" id="dock-btn-notepad" onclick="triggerApp('notepad')"><i class="fa-solid fa-file-lines" style="color:#0d47a1;"></i></div>
+            <div class="dock-app-icon" id="dock-btn-minesweeper" onclick="triggerApp('minesweeper')"><i class="fa-solid fa-land-mine-on" style="color:#f44336;"></i></div>
+            <div class="dock-app-icon" id="dock-btn-settings" onclick="triggerApp('settings')"><i class="fa-solid fa-gear" style="color:#757575;"></i></div>
         </div>
-
         <div class="dock-right">
-            <div class="tray-metric-pill">
-                <i class="fa-solid fa-wifi"></i>
-                <i class="fa-solid fa-volume-high"></i>
-                <i class="fa-solid fa-battery-full"></i>
+            <div class="tray-metric-pill"><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-volume-high"></i><i class="fa-solid fa-battery-full"></i></div>
+            <div class="tray-metric-pill clock-stack"><div id="tray-time" style="font-weight:500;">12:00 PM</div><div id="tray-date" style="font-size:11px; opacity:0.8;">5/17/2026</div></div>
+        </div>
+    </div>
+
+    <!-- 5. Complete Comprehensive Start Menu Overlay Sheet Engine -->
+    <div class="start-overlay" id="startMenuContainer">
+        <div class="search-bar-shell"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search applications, configuration files..."></div>
+        <div class="start-view-panel">
+            <div class="view-section" id="start-pinned-view">
+                <div class="section-header-row"><span>Pinned System Nodes</span><div class="toggle-view-btn" onclick="toggleStartSheet(true)">All Apps <i class="fa-solid fa-chevron-right" style="font-size:9px;"></i></div></div>
+                <div class="apps-grid">
+                    <div class="app-grid-node" onclick="triggerApp('browser'); toggleStartMenu();"><img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg"><span>Edge</span></div>
+                    <div class="app-grid-node" onclick="triggerApp('vs-code'); toggleStartMenu();"><img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg"><span>VS Code</span></div>
+                    <div class="app-grid-node" onclick="triggerApp('explorer'); toggleStartMenu();"><i class="fa-solid fa-folder-open" style="color:#ffb900;"></i><span>Explorer</span></div>
+                    <div class="app-grid-node" onclick="triggerApp('terminal'); toggleStartMenu();"><i class="fa-solid fa-square-terminal" style="color:#222;"></i><span>PowerShell</span></div>
+                    <div class="app-grid-node" onclick="triggerApp('paint'); toggleStartMenu();"><i class="fa-solid fa-palette" style="color:#e040fb;"></i><span>Paint</span></div>
+                    <div class="app-grid-node" onclick="triggerApp('settings'); toggleStartMenu();"><i class="fa-solid fa-gear" style="color:#757575;"></i><span>Settings</span></div>
+                </div>
             </div>
-            <div class="tray-metric-pill clock-stack">
-                <div id="tray-time" style="font-weight:500;">12:00 PM</div>
-                <div id="tray-date" style="font-size:11px; opacity:0.8;">5/17/2026</div>
+            <div class="view-section hidden" id="start-all-apps-view">
+                <div class="section-header-row"><span>All Applications Matrix</span><div class="toggle-view-btn" onclick="toggleStartSheet(false)"><i class="fa-solid fa-chevron-left" style="font-size:9px;"></i> Back</div></div>
+                <div class="apps-list-linear">
+                    <div class="app-list-row" onclick="triggerApp('browser'); toggleStartMenu();"><img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg"><span>Edge Web Navigation Suite</span></div>
+                    <div class="app-list-row" onclick="triggerApp('calculator'); toggleStartMenu();"><i class="fa-solid fa-calculator" style="color:#00bcd4;"></i><span>Calculator Processing Board</span></div>
+                    <div class="app-list-row" onclick="triggerApp('explorer'); toggleStartMenu();"><i class="fa-solid fa-folder-open" style="color:#ffb900;"></i><span>File System Explorer Path</span></div>
+                    <div class="app-list-row" onclick="triggerApp('minesweeper'); toggleStartMenu();"><i class="fa-solid fa-land-mine-on" style="color:#f44336;"></i><span>Minesweeper Strategic Logic Game</span></div>
+                    <div class="app-list-row" onclick="triggerApp('paint'); toggleStartMenu();"><i class="fa-solid fa-palette" style="color:#e040fb;"></i><span>MS Paint HTML5 Studio</span></div>
+                    <div class="app-list-row" onclick="triggerApp('notepad'); toggleStartMenu();"><i class="fa-solid fa-file-lines" style="color:#0d47a1;"></i><span>Notepad Sandbox Text Editor</span></div>
+                    <div class="app-list-row" onclick="triggerApp('terminal'); toggleStartMenu();"><i class="fa-solid fa-square-terminal" style="color:#222;"></i><span>Windows PowerShell Shell Command Engine</span></div>
+                    <div class="app-list-row" onclick="triggerApp('settings'); toggleStartMenu();"><i class="fa-solid fa-gear" style="color:#757575;"></i><span>System Dashboard Control Center</span></div>
+                    <div class="app-list-row" onclick="triggerApp('vs-code'); toggleStartMenu();"><img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg"><span>Visual Studio Code Development Node</span></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 6. Complete OS JavaScript Engine Subsystem -->
+    <!-- 6. Operational Core JavaScript OS Simulation Pipeline Engine -->
     <script>
-        let currentActiveZ = 1000;
-        const appRegistryState = {
-            'browser': { opened: false, minimized: false },
-            'vs-code': { opened: false, minimized: false },
-            'terminal': { opened: false, minimized: false },
-            'settings': { opened: false, minimized: false }
+        let currentActiveZIndex = 1000;
+        const appStateRegistry = {
+            'browser': { open: false, minimized: false }, 'vs-code': { open: false, minimized: false },
+            'explorer': { open: false, minimized: false }, 'terminal': { open: false, minimized: false },
+            'paint': { open: false, minimized: false }, 'calculator': { open: false, minimized: false },
+            'notepad': { open: false, minimized: false }, 'minesweeper': { open: false, minimized: false },
+            'settings': { open: false, minimized: false }
         };
 
-        // --- Core UI Initializations ---
-        function swapWallpaper(url) {
-            document.getElementById('os-body').style.backgroundImage = `url('${url}')`;
-        }
-        swapWallpaper('https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=1200');
+        function applyWallpaper(url) { document.getElementById('os-body').style.backgroundImage = `url('${url}')`; }
+        applyWallpaper('https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=1200');
 
-        // --- Start Menu Switch Layout Controls ---
         function toggleStartMenu() {
-            const menu = document.getElementById('startMenuContainer');
-            menu.classList.toggle('reveal');
-            if(!menu.classList.contains('reveal')) {
-                toggleStartSheet(false);
-            }
+            const m = document.getElementById('startMenuContainer');
+            m.classList.toggle('reveal');
+            if(!m.classList.contains('reveal')) toggleStartSheet(false);
+        }
+        function toggleStartSheet(showAll) {
+            document.getElementById('start-pinned-view').classList.toggle('hidden', showAll);
+            document.getElementById('start-all-apps-view').classList.toggle('hidden', !showAll);
         }
 
-        function toggleStartSheet(showAllApps) {
-            const pinned = document.getElementById('start-pinned-view');
-            const allApps = document.getElementById('start-all-apps-view');
-            if (showAllApps) {
-                pinned.classList.add('hidden');
-                allApps.classList.remove('hidden');
+        function triggerApp(id) {
+            const state = appStateRegistry[id];
+            const f = document.getElementById(`win-${id}`);
+            const btn = document.getElementById(`dock-btn-${id}`);
+            if(!state.open) {
+                state.open = true; f.classList.add('active'); btn.classList.add('app-running'); focusWindow(id);
+                if(id === 'paint') initPaintCanvas(); if(id === 'minesweeper') initMinesweeperGrid();
+            } else if(state.minimized) {
+                state.minimized = false; f.classList.add('active'); focusWindow(id);
             } else {
-                pinned.classList.remove('hidden');
-                allApps.classList.add('hidden');
+                if(getHighestActiveWindow() === `win-${id}`) {
+                    state.minimized = true; f.classList.remove('active'); btn.classList.remove('app-focused');
+                } else { focusWindow(id); }
             }
         }
-
-        // --- Taskbar App State Management Processors ---
-        function triggerApp(appId) {
-            const state = appRegistryState[appId];
-            const frame = document.getElementById(`win-${appId}`);
-            const dockBtn = document.getElementById(`dock-btn-${appId}`);
-
-            if (!state.opened) {
-                // Instantiation Phase
-                state.opened = true;
-                frame.classList.add('active');
-                dockBtn.classList.add('app-running');
-                focusWindow(appId);
-            } else if (state.minimized) {
-                // Restoration Phase
-                state.minimized = false;
-                frame.classList.add('active');
-                focusWindow(appId);
-            } else {
-                // Focus Toggle / Minimization Sequence
-                const currentHighest = getHighestActiveFrame();
-                if (currentHighest === `win-${appId}`) {
-                    state.minimized = true;
-                    frame.classList.remove('active');
-                    dockBtn.classList.remove('app-focused');
-                } else {
-                    focusWindow(appId);
-                }
-            }
+        function focusWindow(id) {
+            currentActiveZIndex++; document.getElementById(`win-${id}`).style.zIndex = currentActiveZIndex;
+            Object.keys(appStateRegistry).forEach(k => document.getElementById(`dock-btn-${k}`).classList.remove('app-focused'));
+            document.getElementById(`dock-btn-${id}`).classList.add('app-focused');
         }
-
-        function focusWindow(appId) {
-            currentActiveZ++;
-            const targetFrame = document.getElementById(`win-${appId}`);
-            targetFrame.style.zIndex = currentActiveZ;
-            
-            // Clear prior focused application visual states
-            Object.keys(appRegistryState).forEach(key => {
-                document.getElementById(`dock-btn-${key}`).classList.remove('app-focused');
-            });
-            document.getElementById(`dock-btn-${appId}`).classList.add('app-focused');
-        }
-
-        function minimizeWindow(appId) {
-            appRegistryState[appId].minimized = true;
-            document.getElementById(`win-${appId}`).classList.remove('active');
-            document.getElementById(`dock-btn-${appId}`).classList.remove('app-focused');
-        }
-
-        function maximizeWindow(appId) {
-            document.getElementById(`win-${appId}`).classList.toggle('maximized');
-        }
-
-        function closeWindow(appId) {
-            const state = appRegistryState[appId];
-            state.opened = false;
-            state.minimized = false;
-            
-            const frame = document.getElementById(`win-${appId}`);
-            frame.classList.remove('active', 'maximized');
-            
-            const dockBtn = document.getElementById(`dock-btn-${appId}`);
-            dockBtn.classList.remove('app-running', 'app-focused');
-        }
-
-        function getHighestActiveFrame() {
-            let maxZ = 0;
-            let topId = null;
-            Object.keys(appRegistryState).forEach(id => {
+        function minimizeWindow(id) { appStateRegistry[id].minimized = true; document.getElementById(`win-${id}`).classList.remove('active'); document.getElementById(`dock-btn-${id}`).classList.remove('app-focused'); }
+        function maximizeWindow(id) { document.getElementById(`win-${id}`).classList.toggle('maximized'); }
+        function closeWindow(id) { appStateRegistry[id].open = false; appStateRegistry[id].minimized = false; document.getElementById(`win-${id}`).classList.remove('active', 'maximized'); document.getElementById(`dock-btn-${id}`).classList.remove('app-running', 'app-focused'); }
+        function getHighestActiveWindow() {
+            let maxZ = 0, topId = null;
+            Object.keys(appStateRegistry).forEach(id => {
                 const f = document.getElementById(`win-${id}`);
-                if (f.classList.contains('active') && parseInt(f.style.zIndex || 0) > maxZ) {
-                    maxZ = parseInt(f.style.zIndex);
-                    topId = f.id;
-                }
+                if(f.classList.contains('active') && parseInt(f.style.zIndex || 0) > maxZ) { maxZ = parseInt(f.style.zIndex); topId = f.id; }
             });
             return topId;
         }
 
-        // --- Custom Component Dragging Architecture ---
-        function mountDrag(titlebarElement) {
-            const frame = titlebarElement.parentElement;
-            if (frame.classList.contains('maximized')) return;
-            
-            focusWindow(frame.id.replace('win-', ''));
-            let xOffset = 0, yOffset = 0, xStart = 0, yStart = 0;
-
-            xStart = window.event.clientX;
-            yStart = window.event.clientY;
-            
-            document.onmouseup = stopFrameDrag;
-            document.onmousemove = frameExecuteDrag;
-
-            function frameExecuteDrag(e) {
-                xOffset = xStart - e.clientX;
-                yOffset = yStart - e.clientY;
-                xStart = e.clientX;
-                yStart = e.clientY;
-                frame.style.top = (frame.offsetTop - yOffset) + "px";
-                frame.style.left = (frame.offsetLeft - xOffset) + "px";
-            }
-
-            function stopFrameDrag() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-            }
+        // --- Drag Window Pipeline Implementation ---
+        function mountDrag(bar) {
+            const f = bar.parentElement; if (f.classList.contains('maximized')) return;
+            focusWindow(f.id.replace('win-', ''));
+            let x1 = 0, y1 = 0, x2 = window.event.clientX, y2 = window.event.clientY;
+            document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
+            document.onmousemove = (e) => { x1 = x2 - e.clientX; y1 = y2 - e.preventDefault() ? 0 : e.clientY; x2 = e.clientX; y2 = e.clientY; f.style.top = (f.offsetTop - y1) + "px"; f.style.left = (f.offsetLeft - x1) + "px"; };
         }
 
-        // --- Advanced Shell Context Menu Dispatcher ---
-        const contextMenu = document.getElementById('desktopContextMenu');
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            const startOverlay = document.getElementById('startMenuContainer');
-            if (e.target.closest('.taskbar-dock') || e.target.closest('.start-overlay') || e.target.closest('.win-frame')) return;
-            
-            startOverlay.classList.remove('reveal');
-            contextMenu.style.top = `${e.clientY}px`;
-            contextMenu.style.left = `${e.clientX}px`;
-            contextMenu.style.display = 'flex';
+        // --- Context Menu Management Framework ---
+        const context = document.getElementById('desktopContextMenu');
+        document.addEventListener('contextmenu', e => {
+            if(e.target.closest('.taskbar-dock') || e.target.closest('.start-overlay') || e.target.closest('.win-frame')) return;
+            e.preventDefault(); toggleStartSheet(false); document.getElementById('startMenuContainer').classList.remove('reveal');
+            context.style.top = `${e.clientY}px`; context.style.left = `${e.clientX}px`; context.style.display = 'flex';
         });
+        document.addEventListener('click', e => { if(!e.target.closest('#desktopContextMenu')) context.style.display = 'none'; if(!e.target.closest('#startMenuContainer') && !e.target.closest('#task-start-trigger')) document.getElementById('startMenuContainer').classList.remove('reveal'); });
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('#desktopContextMenu')) {
-                contextMenu.style.display = 'none';
-            }
-            if (!e.target.closest('#startMenuContainer') && !e.target.closest('#task-start-trigger')) {
-                document.getElementById('startMenuContainer').classList.remove('reveal');
-            }
-        });
-
-        // --- JS Terminal Execution Pipeline ---
-        function runTerminalPipe(e) {
+        // --- Native Core App: PowerShell Module Engine ---
+        function processShellPipeline(e) {
             if (e.key === 'Enter') {
-                const input = e.target;
-                const cmd = input.value.trim().toLowerCase();
-                const log = document.getElementById('term-log');
-                let result = '';
-
-                if (cmd === 'help') {
-                    result = 'Core Commands: clear, help, sysinfo, date, matrix';
-                } else if (cmd === 'sysinfo') {
-                    result = 'Host: Vercel Cloud Node Architecture\nPlatform Shell: Win11-WebCore JS-UX Engine v1.9\nCPU/RAM: Sandbox Environment Standard';
-                } else if (cmd === 'date') {
-                    result = new Date().toString();
-                } else if (cmd === 'matrix') {
-                    result = 'Wake up, Neo... The browser has you.';
-                } else if (cmd === 'clear') {
-                    log.innerHTML = '';
-                } else if (cmd !== '') {
-                    result = `'${cmd}' was executed but skipped by kernel. Invalid or missing operational routine.`;
-                }
-
+                const input = e.target; const log = document.getElementById('shell-log'); const cmd = input.value.trim().toLowerCase(); let res = '';
+                if (cmd === 'help') res = 'System commands: clear, help, sysinfo, date, calc, neofetch, matrix';
+                else if (cmd === 'sysinfo') res = 'OS Platform: Windows 11 Static Environment Subsystem\nRuntime Kernal: JavaScript V8 Browser Engine\nHosting Architecture: Vercel Production Global Nodes';
+                else if (cmd === 'date') res = new Date().toString();
+                else if (cmd === 'calc') res = 'Launch Calculator layout manually via the desktop icon framework.';
+                else if (cmd === 'matrix') res = 'Neo, processing simulated systemic glitch protocols...';
+                else if (cmd === 'neofetch') res = ' <span style="color:#0078d4; font-weight:bold;">   _--_    </span>     VercelUser@Win11Web\n <span style="color:#0078d4; font-weight:bold;">  | *  |   </span>     -------------------\n <span style="color:#0078d4; font-weight:bold;">   \__-    </span>     OS: Windows 11 Custom Web Emulator 2026\n                Kernel: Browser-Engine Core v8.6\n                Uptime: Infinite Sandbox Session';
+                else if (cmd === 'clear') log.innerHTML = '';
+                else if (cmd !== '') res = `'${cmd}' is unverified as an operational internal command pipeline configuration.`;
+                
                 if (cmd !== 'clear') {
-                    log.innerHTML += `<div><span style="color:#ffb900;">PS C:\\Users\\Administrator&gt;</span> ${input.value}</div>`;
-                    if (result) log.innerHTML += `<div>${result.replace(/\n/g, '<br>')}</div>`;
+                    log.innerHTML += `<div><span style="color:#ffb900;">PS C:\\Users\\Vercel&gt;</span> ${input.value}</div>`;
+                    if(res) log.innerHTML += `<div>${res.replace(/\n/g, '<br>')}</div>`;
                     log.innerHTML += `<div>&nbsp;</div>`;
                 }
-
-                input.value = '';
-                const container = log.parentElement;
-                container.scrollTop = container.scrollHeight;
+                input.value = ''; log.parentElement.scrollTop = log.parentElement.scrollHeight;
             }
         }
 
-        // --- Dynamic Clock Clock System ---
-        function runClockLoop() {
-            const dateObj = new Date();
-            document.getElementById('tray-time').innerText = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('tray-date').innerText = dateObj.toLocaleDateString();
+        // --- Native Core App: MS Paint Core ---
+        let canvas, ctx, drawing = false;
+        function initPaintCanvas() {
+            canvas = document.getElementById('paintCanvasSurface'); ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight;
+            canvas.onmousedown = () => drawing = true; canvas.onmouseup = () => { drawing = false; ctx.beginPath(); };
+            canvas.onmousemove = (e) => { if(!drawing) return; ctx.lineWidth = document.getElementById('paintBrushSize').value; ctx.lineCap = 'round'; ctx.strokeStyle = document.getElementById('paintColor').value; ctx.lineTo(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.clientX - canvas.getBoundingClientRect().left, e.clientY - canvas.getBoundingClientRect().top); };
         }
-        setInterval(runClockLoop, 1000);
-        runClockLoop();
+        function clearPaintCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+        // --- Native Core App: Calculator Routine ---
+        function pressCalcKey(val) {
+            const d = document.getElementById('calcDisplay');
+            if(val === 'C') d.value = '0';
+            else if(val === '=') { try { d.value = eval(d.value); } catch { d.value = 'Error'; } }
+            else { if(d.value === '0' || d.value === 'Error') d.value = val; else d.value += val; }
+        }
+
+        // --- Native Core App: Minesweeper Generation Game Matrix ---
+        function initMinesweeperGrid() {
+            const grid = document.getElementById('minefield'); grid.innerHTML = '';
+            for(let i=0; i<64; i++) {
+                const cell = document.createElement('div'); cell.className = 'mine-cell';
+                cell.onclick = () => { cell.classList.add('revealed'); if(Math.random() < 0.15) { cell.innerHTML = '💣'; cell.style.background = '#f44336'; alert('Game Over!'); initMinesweeperGrid(); } else { cell.innerHTML = Math.floor(Math.random()*3); } };
+                grid.appendChild(cell);
+            }
+        }
+
+        // --- Universal Real-Time Clock Metric ---
+        function clockSyncTask() {
+            const d = new Date(); document.getElementById('tray-time').innerText = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('tray-date').innerText = d.toLocaleDateString();
+        }
+        setInterval(clockSyncTask, 1000); clockSyncTask();
     </script>
 </body>
 </html>

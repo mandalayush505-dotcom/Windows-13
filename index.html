@@ -3,18 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Windows 11 Web Replica</title>
-    <!-- FontAwesome for Windows 11 looking icons -->
+    <title>Windows 11 Full OS Environment</title>
+    <!-- FontAwesome & Google Fonts for accurate Win11 UI styling -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --accent-color: #0078d4;
-            --taskbar-bg: rgba(243, 243, 243, 0.85);
-            --window-bg: rgba(255, 255, 255, 0.85);
-            --menu-bg: rgba(243, 243, 243, 0.92);
-            --text-color: #1c1c1c;
-            --border-color: rgba(0, 0, 0, 0.15);
-            --blur-effect: blur(25px) saturate(180%);
+            --accent-light: #e6f2fa;
+            --taskbar-bg: rgba(243, 243, 243, 0.86);
+            --window-bg: rgba(255, 255, 255, 0.9);
+            --menu-bg: rgba(243, 243, 243, 0.94);
+            --context-bg: rgba(255, 255, 255, 0.96);
+            --text-dark: #1a1a1a;
+            --text-light: #616161;
+            --border-subtle: rgba(0, 0, 0, 0.08);
+            --border-strong: rgba(0, 0, 0, 0.16);
+            --blur: blur(30px) saturate(190%);
+            --radius-md: 8px;
+            --radius-sm: 4px;
         }
 
         * {
@@ -22,589 +28,969 @@
             margin: 0;
             padding: 0;
             user-select: none;
+            -webkit-user-select: none;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body, html {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             overflow: hidden;
-            background: url('https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=2832&auto=format&fit=crop') no-repeat center center/cover;
+            background-color: #004578;
+            transition: background-image 0.25s ease-in-out;
         }
 
         /* --- Desktop Grid System --- */
-        .desktop {
+        .desktop-canvas {
             width: 100%;
-            height: calc(100% - 48px);
+            height: calc(100vh - 48px);
             position: relative;
-            padding: 10px;
+            padding: 12px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, 80px);
-            grid-template-rows: repeat(auto-fill, 85px);
+            grid-template-columns: repeat(auto-fill, 76px);
+            grid-template-rows: repeat(auto-fill, 82px);
             grid-auto-flow: column;
-            gap: 15px;
+            gap: 16px;
+            z-index: 1;
         }
 
-        .desktop-icon {
+        .desktop-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 80px;
-            height: 85px;
-            border-radius: 4px;
+            width: 76px;
+            height: 82px;
+            border-radius: var(--radius-sm);
             border: 1px solid transparent;
-            cursor: pointer;
+            cursor: default;
             text-align: center;
-            transition: background 0.2s, border 0.2s;
         }
 
-        .desktop-icon:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+        .desktop-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
 
-        .desktop-icon i {
-            font-size: 28px;
+        .desktop-item i, .desktop-item img {
+            font-size: 30px;
+            width: 32px;
+            height: 32px;
             margin-bottom: 6px;
+            object-fit: contain;
         }
-        
-        .desktop-icon.edge i { color: #107c41; }
-        .desktop-icon.explorer i { color: #ffb900; }
-        .desktop-icon.terminal i { color: #cccccc; }
 
-        .desktop-icon span {
+        .desktop-item span {
             color: white;
-            font-size: 12px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            font-size: 11.5px;
+            font-weight: 400;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        /* --- Operating Window System (Fluid Dragging) --- */
-        .window {
+        /* --- Right Click Custom Context Menu --- */
+        .context-menu {
             position: absolute;
-            width: 650px;
-            height: 450px;
+            background: var(--context-bg);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+            width: 220px;
+            padding: 6px;
+            z-index: 100000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .context-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: var(--text-dark);
+            border-radius: var(--radius-sm);
+            cursor: default;
+            position: relative;
+        }
+
+        .context-item:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .context-item i {
+            width: 22px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .context-separator {
+            height: 1px;
+            background: var(--border-subtle);
+            margin: 5px 4px;
+        }
+
+        /* Submenu Triggers */
+        .context-item .submenu-arrow {
+            margin-left: auto;
+            font-size: 10px;
+        }
+
+        .context-submenu {
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background: var(--context-bg);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+            width: 180px;
+            padding: 4px;
+            display: none;
+            flex-direction: column;
+        }
+
+        .context-item:hover .context-submenu {
+            display: flex;
+        }
+
+        /* --- Windows Framework Mechanics --- */
+        .win-frame {
+            position: absolute;
             background: var(--window-bg);
-            backdrop-filter: var(--blur-effect);
-            -webkit-backdrop-filter: var(--blur-effect);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             z-index: 10;
-            transform: scale(0.95);
+            transform: scale(0.94);
             opacity: 0;
             pointer-events: none;
-            transition: transform 0.15s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.15s;
+            transition: transform 0.2s cubic-bezier(0.05, 0.9, 0.1, 1), opacity 0.15s;
         }
 
-        .window.active {
+        .win-frame.active {
             transform: scale(1);
             opacity: 1;
             pointer-events: auto;
         }
 
-        .window.maximized {
+        .win-frame.maximized {
             width: 100% !important;
-            height: calc(100% - 48px) !important;
+            height: calc(100vh - 48px) !important;
             top: 0 !important;
             left: 0 !important;
             border-radius: 0;
         }
 
-        .window-titlebar {
-            height: 40px;
-            background: rgba(255, 255, 255, 0.4);
+        .win-titlebar {
+            height: 38px;
+            background: rgba(255, 255, 255, 0.3);
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0 12px;
-            cursor: move;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            cursor: default;
+            border-bottom: 1px solid var(--border-subtle);
         }
 
-        .titlebar-left {
+        .title-meta {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-color);
+            font-size: 12.5px;
+            font-weight: 400;
+            color: var(--text-dark);
         }
 
-        .titlebar-controls {
+        .title-meta img, .title-meta i {
+            width: 16px;
+            height: 16px;
+            font-size: 14px;
+            object-fit: contain;
+        }
+
+        .title-controls {
             display: flex;
+            margin-right: -12px;
         }
 
-        .control-btn {
+        .win-btn {
             width: 46px;
-            height: 40px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            color: var(--text-color);
-            cursor: pointer;
-            transition: background 0.2s;
+            font-size: 11px;
+            color: var(--text-dark);
+            cursor: default;
         }
 
-        .control-btn:hover {
-            background: rgba(0, 0, 0, 0.08);
+        .win-btn:hover {
+            background: rgba(0, 0, 0, 0.06);
         }
 
-        .control-btn.close:hover {
+        .win-btn.btn-close:hover {
             background: #e81123;
             color: white;
         }
 
-        .window-body {
+        .win-content {
             flex-grow: 1;
             width: 100%;
-            height: calc(100% - 40px);
-            background: white;
+            height: calc(100% - 38px);
+            background: #ffffff;
+            position: relative;
         }
 
-        .window-body iframe {
+        .win-content iframe {
             width: 100%;
             height: 100%;
             border: none;
+            background: #ffffff;
         }
 
-        /* Dedicated Terminal Styling */
-        .terminal-body {
-            background: #0c0c0c;
-            color: #cccccc;
-            font-family: 'Consolas', monospace;
-            padding: 12px;
-            font-size: 14px;
-            overflow-y: auto;
-        }
-        .terminal-line { margin-bottom: 4px; }
-        .terminal-input-row { display: flex; }
-        .terminal-prompt { color: #00ff00; margin-right: 8px; }
-        .terminal-input-row input {
-            background: transparent;
-            border: none;
-            color: white;
-            font-family: 'Consolas', monospace;
-            font-size: 14px;
-            flex-grow: 1;
-            outline: none;
+        /* Custom OS Utility Configurations */
+        .utility-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            background: #f3f3f3;
         }
 
-        /* --- Taskbar Architecture --- */
-        .taskbar {
+        /* --- Complete Taskbar Architecture --- */
+        .taskbar-dock {
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 100%;
+            width: 100vw;
             height: 48px;
             background: var(--taskbar-bg);
-            backdrop-filter: var(--blur-effect);
-            -webkit-backdrop-filter: var(--blur-effect);
-            border-top: 1px solid var(--border-color);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border-top: 1px solid var(--border-subtle);
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0 12px;
-            z-index: 9999;
+            z-index: 999999;
         }
 
-        .taskbar-left, .taskbar-right {
-            width: 200px;
+        .dock-left, .dock-right {
+            width: 240px;
             display: flex;
             align-items: center;
         }
 
-        .taskbar-right {
+        .dock-right {
             justify-content: flex-end;
             gap: 12px;
-            font-size: 12px;
-            color: var(--text-color);
         }
 
-        .system-tray-icons {
-            display: flex;
-            gap: 12px;
-            cursor: pointer;
-        }
-
-        .taskbar-center {
+        .tray-metric-pill {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--text-dark);
         }
 
-        .taskbar-icon {
+        .tray-metric-pill:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .dock-center {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dock-app-icon {
             width: 40px;
             height: 40px;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
             position: relative;
+            transition: background 0.2s, transform 0.1s;
         }
 
-        .taskbar-icon:hover {
-            background: rgba(255, 255, 255, 0.6);
+        .dock-app-icon:hover {
+            background: rgba(255, 255, 255, 0.55);
         }
 
-        .taskbar-icon:active {
-            transform: scale(0.9);
+        .dock-app-icon img, .dock-app-icon i {
+            width: 24px;
+            height: 24px;
+            font-size: 24px;
+            object-fit: contain;
         }
 
-        /* Start Button Custom Fluid Logo */
-        .start-btn i {
-            color: #0078d4;
-        }
-
-        /* System App Indicators */
-        .taskbar-icon::after {
+        /* Application State Dots */
+        .dock-app-icon::after {
             content: '';
             position: absolute;
-            bottom: 2px;
+            bottom: 1px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 3px;
             background: var(--accent-color);
             border-radius: 2px;
-            transition: width 0.2s;
-        }
-        .taskbar-icon.running::after {
-            width: 6px;
-        }
-        .taskbar-icon.active-window::after {
-            width: 16px;
+            transition: all 0.2s;
         }
 
-        /* --- Complete Start Menu --- */
-        .start-menu {
+        .dock-app-icon.app-running::after { width: 6px; }
+        .dock-app-icon.app-focused::after { width: 16px; background: var(--accent-color); }
+
+        /* --- Immersive Start Menu Container --- */
+        .start-overlay {
             position: absolute;
-            bottom: -600px;
+            bottom: -680px;
             left: 50%;
             transform: translateX(-50%);
             width: 520px;
-            height: 550px;
+            height: 580px;
             background: var(--menu-bg);
-            backdrop-filter: var(--blur-effect);
-            -webkit-backdrop-filter: var(--blur-effect);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: bottom 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
-            z-index: 999;
-            padding: 30px;
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+            transition: bottom 0.28s cubic-bezier(0.1, 0.9, 0.15, 1);
+            z-index: 99999;
+            padding: 32px;
             display: flex;
             flex-direction: column;
         }
 
-        .start-menu.open {
+        .start-overlay.reveal {
             bottom: 60px;
         }
 
-        .start-search {
+        .search-bar-shell {
             width: 100%;
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid rgba(0,0,0,0.1);
-            background: white;
-            outline: none;
+            position: relative;
             margin-bottom: 24px;
-            font-size: 14px;
         }
 
-        .start-apps-grid {
+        .search-bar-shell input {
+            width: 100%;
+            padding: 8px 16px 8px 36px;
+            border-radius: 20px;
+            border: 1px solid var(--border-strong);
+            background: #ffffff;
+            outline: none;
+            font-size: 13.5px;
+        }
+
+        .search-bar-shell i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        /* Twin Layer: Pinned Matrix & All Apps Sheet */
+        .start-view-panel {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .view-section {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .view-section.hidden {
+            transform: translateX(100px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .section-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-header-row span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .toggle-view-btn {
+            font-size: 11.5px;
+            padding: 4px 10px;
+            background: #ffffff;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-sm);
+            cursor: default;
+        }
+
+        .toggle-view-btn:hover { background: #f5f5f5; }
+
+        .apps-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 20px;
-            flex-grow: 1;
+            gap: 16px;
+            overflow-y: auto;
         }
 
-        .start-app-item {
+        .app-grid-node {
             display: flex;
             flex-direction: column;
             align-items: center;
-            cursor: pointer;
             text-align: center;
+            padding: 8px 4px;
+            border-radius: var(--radius-sm);
         }
 
-        .start-app-item i {
-            font-size: 24px;
-            margin-bottom: 8px;
+        .app-grid-node:hover {
+            background: rgba(255, 255, 255, 0.4);
         }
 
-        .start-app-item span {
+        .app-grid-node img, .app-grid-node i {
+            width: 28px;
+            height: 28px;
+            font-size: 28px;
+            margin-bottom: 6px;
+            object-fit: contain;
+        }
+
+        .app-grid-node span {
             font-size: 11px;
-            color: var(--text-color);
+            color: var(--text-dark);
         }
-        
-        .time-widget {
+
+        .apps-list-linear {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow-y: auto;
+            height: calc(100% - 40px);
+            padding-right: 4px;
+        }
+
+        .app-list-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+        }
+
+        .app-list-row:hover { background: rgba(255, 255, 255, 0.4); }
+
+        .app-list-row img, .app-list-row i {
+            width: 22px;
+            height: 22px;
+            font-size: 22px;
+            object-fit: contain;
+        }
+
+        .app-list-row span { font-size: 12.5px; color: var(--text-dark); }
+
+        /* Wallpaper Store Configurator */
+        .wp-option-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 16px;
+        }
+        .wp-thumb {
+            width: 100%;
+            height: 110px;
+            border-radius: var(--radius-md);
+            border: 2px solid transparent;
+            object-fit: cover;
+            cursor: default;
+        }
+        .wp-thumb:hover { border-color: rgba(0,0,0,0.2); }
+
+        /* Structural Overrides for Custom Native Widgets */
+        .settings-sidebar {
+            width: 160px;
+            background: #eaeaea;
+            border-right: 1px solid var(--border-subtle);
+            padding: 12px 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .settings-nav-item {
+            padding: 8px 12px;
+            font-size: 12.5px;
+            border-radius: var(--radius-sm);
+        }
+        .settings-nav-item.active {
+            background: #ffffff;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+        .clock-stack {
             text-align: right;
-            line-height: 1.3;
+            line-height: 1.2;
         }
     </style>
 </head>
-<body>
+<body id="os-body">
 
-    <!-- Desktop Workspace Grid -->
-    <div class="desktop" id="desktop">
-        <div class="desktop-icon edge" onclick="openWindow('browser-win')">
-            <i class="fa-brands fa-edge"></i>
+    <!-- 1. Real Engine Workspace Surface -->
+    <div class="desktop-canvas" id="desktopWorkspace">
+        <!-- Built-In Operational Nodes -->
+        <div class="desktop-item" onclick="triggerApp('browser')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg" alt="Edge">
             <span>Edge Browser</span>
         </div>
-        <div class="desktop-icon explorer" onclick="openWindow('explorer-win')">
-            <i class="fa-solid fa-folder-open"></i>
-            <span>File Explorer</span>
+        <div class="desktop-item" onclick="triggerApp('vs-code')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg" alt="VSCode">
+            <span>VS Code</span>
         </div>
-        <div class="desktop-icon terminal" onclick="openWindow('terminal-win')">
-            <i class="fa-solid fa-terminal"></i>
+        <div class="desktop-item" onclick="triggerApp('terminal')">
+            <i class="fa-solid fa-square-terminal" style="color: #0078d4;"></i>
             <span>Terminal</span>
+        </div>
+        <div class="desktop-item" onclick="triggerApp('settings')">
+            <i class="fa-solid fa-gear" style="color: #888888;"></i>
+            <span>Settings</span>
         </div>
     </div>
 
-    <!-- Application Frame Window: Edge Browser -->
-    <div class="window" id="browser-win" style="top: 10%; left: 15%;">
-        <div class="window-titlebar" onmousedown="dragWindow(this)">
-            <div class="titlebar-left">
-                <i class="fa-brands fa-edge" style="color: #107c41;"></i>
-                <span>Edge Browser</span>
-            </div>
-            <div class="titlebar-controls">
-                <div class="control-btn" onclick="minimizeWindow('browser-win')"><i class="fa-solid fa-minus"></i></div>
-                <div class="control-btn" onclick="maximizeWindow('browser-win')"><i class="fa-regular fa-square"></i></div>
-                <div class="control-btn close" onclick="closeWindow('browser-win')"><i class="fa-solid fa-xmark"></i></div>
+    <!-- 2. Advanced Global Desktop Context Menu -->
+    <div class="context-menu" id="desktopContextMenu">
+        <div class="context-item">
+            <i class="fa-regular fa-eye"></i>View
+            <i class="fa-solid fa-chevron-right submenu-arrow"></i>
+            <div class="context-submenu">
+                <div class="context-item" onclick="alert('Icons sized Large')">Large icons</div>
+                <div class="context-item" onclick="alert('Icons sized Medium')">Medium icons</div>
             </div>
         </div>
-        <div class="window-body">
+        <div class="context-item" onclick="window.location.reload()"><i class="fa-solid fa-rotate-right"></i>Refresh</div>
+        <div class="context-separator"></div>
+        <div class="context-item">
+            <i class="fa-solid fa-plus"></i>New
+            <i class="fa-solid fa-chevron-right submenu-arrow"></i>
+            <div class="context-submenu">
+                <div class="context-item" onclick="alert('New folder initialized.')">Folder</div>
+                <div class="context-item" onclick="alert('Shortcut path requested.')">Shortcut</div>
+            </div>
+        </div>
+        <div class="context-separator"></div>
+        <div class="context-item" onclick="triggerApp('settings')"><i class="fa-solid fa-wand-magic-sparkles"></i>Personalize</div>
+    </div>
+
+    <!-- 3. Dynamic Application Frame Layer Configuration -->
+    <!-- Frame: Edge Browser -->
+    <div class="win-frame" id="win-browser" style="width:780px; height:520px; top:12%; left:18%;">
+        <div class="win-titlebar" onmousedown="mountDrag(this)">
+            <div class="title-meta">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg" alt="Edge">
+                <span>Microsoft Edge</span>
+            </div>
+            <div class="title-controls">
+                <div class="win-btn" onclick="minimizeWindow('browser')"><i class="fa-solid fa-minus"></i></div>
+                <div class="win-btn" onclick="maximizeWindow('browser')"><i class="fa-regular fa-square"></i></div>
+                <div class="win-btn btn-close" onclick="closeWindow('browser')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+        </div>
+        <div class="win-content">
             <iframe src="https://www.bing.com"></iframe>
         </div>
     </div>
 
-    <!-- Application Frame Window: File Explorer -->
-    <div class="window" id="explorer-win" style="top: 15%; left: 20%;">
-        <div class="window-titlebar" onmousedown="dragWindow(this)">
-            <div class="titlebar-left">
-                <i class="fa-solid fa-folder-open" style="color: #ffb900;"></i>
-                <span>File Explorer</span>
+    <!-- Frame: VS Code Editor -->
+    <div class="win-frame" id="win-vs-code" style="width:840px; height:560px; top:8%; left:14%;">
+        <div class="win-titlebar" onmousedown="mountDrag(this)">
+            <div class="title-meta">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg" alt="VSCode">
+                <span>Visual Studio Code - Web Node</span>
             </div>
-            <div class="titlebar-controls">
-                <div class="control-btn" onclick="minimizeWindow('explorer-win')"><i class="fa-solid fa-minus"></i></div>
-                <div class="control-btn" onclick="maximizeWindow('explorer-win')"><i class="fa-regular fa-square"></i></div>
-                <div class="control-btn close" onclick="closeWindow('explorer-win')"><i class="fa-solid fa-xmark"></i></div>
-            </div>
-        </div>
-        <div class="window-body">
-            <iframe src="https://view.officeapps.live.com/op/embed.aspx?src=https://nobelprize.org/pdf/economic-sciences/2022/econprize2022.pdf" style="background:#f3f3f3; padding: 20px; font-size:14px;"></iframe>
-        </div>
-    </div>
-
-    <!-- Application Frame Window: Terminal -->
-    <div class="window" id="terminal-win" style="top: 20%; left: 25%;">
-        <div class="window-titlebar" onmousedown="dragWindow(this)">
-            <div class="titlebar-left">
-                <i class="fa-solid fa-terminal" style="color: #ccc;"></i>
-                <span>Windows Terminal</span>
-            </div>
-            <div class="titlebar-controls">
-                <div class="control-btn" onclick="minimizeWindow('terminal-win')"><i class="fa-solid fa-minus"></i></div>
-                <div class="control-btn" onclick="maximizeWindow('terminal-win')"><i class="fa-regular fa-square"></i></div>
-                <div class="control-btn close" onclick="closeWindow('terminal-win')"><i class="fa-solid fa-xmark"></i></div>
+            <div class="title-controls">
+                <div class="win-btn" onclick="minimizeWindow('vs-code')"><i class="fa-solid fa-minus"></i></div>
+                <div class="win-btn" onclick="maximizeWindow('vs-code')"><i class="fa-regular fa-square"></i></div>
+                <div class="win-btn btn-close" onclick="closeWindow('vs-code')"><i class="fa-solid fa-xmark"></i></div>
             </div>
         </div>
-        <div class="window-body terminal-body" onclick="document.getElementById('term-input').focus()">
-            <div id="terminal-output">
-                <div class="terminal-line">Windows PowerShell</div>
-                <div class="terminal-line">Copyright (C) Microsoft Corporation. All rights reserved.</div>
-                <div class="terminal-line">Type 'help' or 'clear' to interact.</div>
-                <div class="terminal-line">&nbsp;</div>
-            </div>
-            <div class="terminal-input-row">
-                <span class="terminal-prompt">PS C:\Users\VercelUser&gt;</span>
-                <input type="text" id="term-input" onkeydown="handleTerminal(event)" autofocus autocomplete="off">
-            </div>
+        <div class="win-content">
+            <iframe src="https://github1s.com/microsoft/vscode"></iframe>
         </div>
     </div>
 
-    <!-- Interactive Windows 11 Start Menu -->
-    <div class="start-menu" id="startMenu">
-        <input type="text" class="start-search" placeholder="Type here to search...">
-        <div class="start-apps-grid">
-            <div class="start-app-item" onclick="openWindow('browser-win'); toggleStart()">
-                <i class="fa-brands fa-edge" style="color: #107c41;"></i><span>Edge</span>
+    <!-- Frame: Native JS Virtual Terminal Engine -->
+    <div class="win-frame" id="win-terminal" style="width:600px; height:400px; top:20%; left:25%;">
+        <div class="win-titlebar" onmousedown="mountDrag(this)">
+            <div class="title-meta">
+                <i class="fa-solid fa-square-terminal" style="color:#0078d4;"></i>
+                <span>Windows PowerShell</span>
             </div>
-            <div class="start-app-item" onclick="openWindow('explorer-win'); toggleStart()">
-                <i class="fa-solid fa-folder-open" style="color: #ffb900;"></i><span>Explorer</span>
+            <div class="title-controls">
+                <div class="win-btn" onclick="minimizeWindow('terminal')"><i class="fa-solid fa-minus"></i></div>
+                <div class="win-btn" onclick="maximizeWindow('terminal')"><i class="fa-regular fa-square"></i></div>
+                <div class="win-btn btn-close" onclick="closeWindow('terminal')"><i class="fa-solid fa-xmark"></i></div>
             </div>
-            <div class="start-app-item" onclick="openWindow('terminal-win'); toggleStart()">
-                <i class="fa-solid fa-terminal" style="color: #333;"></i><span>Terminal</span>
+        </div>
+        <div class="win-content" style="background:#012456; color:#ffffff; font-family:'Consolas',monospace; padding:12px; overflow-y:auto; font-size:14px;" onclick="document.getElementById('real-term-input').focus()">
+            <div id="term-log">
+                <div>Windows PowerShell v7.4.0-web-core</div>
+                <div>System deployment complete. Type 'help', 'clear', or 'sysinfo'.</div>
+                <div>&nbsp;</div>
+            </div>
+            <div style="display:flex; align-items:center; width:100%;">
+                <span style="color:#ffb900; margin-right:8px; white-space:nowrap;">PS C:\Users\Administrator&gt;</span>
+                <input type="text" id="real-term-input" onkeydown="runTerminalPipe(event)" style="background:transparent; border:none; outline:none; color:white; font-family:'Consolas',monospace; font-size:14px; flex-grow:1;" autocomplete="off" autofocus>
             </div>
         </div>
     </div>
 
-    <!-- Central Taskbar System -->
-    <div class="taskbar">
-        <div class="taskbar-left"></div>
+    <!-- Frame: Settings & Control Subsystem -->
+    <div class="win-frame" id="win-settings" style="width:680px; height:460px; top:15%; left:22%;">
+        <div class="win-titlebar" onmousedown="mountDrag(this)">
+            <div class="title-meta">
+                <i class="fa-solid fa-gear" style="color:#666;"></i>
+                <span>Settings</span>
+            </div>
+            <div class="title-controls">
+                <div class="win-btn" onclick="minimizeWindow('settings')"><i class="fa-solid fa-minus"></i></div>
+                <div class="win-btn" onclick="maximizeWindow('settings')"><i class="fa-regular fa-square"></i></div>
+                <div class="win-btn btn-close" onclick="closeWindow('settings')"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+        </div>
+        <div class="win-content utility-container">
+            <div class="settings-sidebar">
+                <div class="settings-nav-item active"><i class="fa-solid fa-palette" style="margin-right:8px;"></i>Personalization</div>
+            </div>
+            <div style="flex-grow:1; padding:20px; background:#ffffff; overflow-y:auto;">
+                <h3 style="margin-bottom:12px; font-weight:400;">Select Desktop Background Wallpaper</h3>
+                <div class="wp-option-grid">
+                    <img src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=1200" class="wp-thumb" onclick="swapWallpaper(this.src)">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200" class="wp-thumb" onclick="swapWallpaper(this.src)">
+                    <img src="https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=1200" class="wp-thumb" onclick="swapWallpaper(this.src)">
+                    <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1200" class="wp-thumb" onclick="swapWallpaper(this.src)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Windows 11 Start Menu Shell Engine -->
+    <div class="start-overlay" id="startMenuContainer">
+        <div class="search-bar-shell">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search for apps, files, and settings...">
+        </div>
         
-        <div class="taskbar-center">
-            <div class="taskbar-icon start-btn" onclick="toggleStart()">
-                <i class="fa-brands fa-windows"></i>
+        <div class="start-view-panel">
+            <!-- Sheet Layer A: Pinned Apps Matrix -->
+            <div class="view-section" id="start-pinned-view">
+                <div class="section-header-row">
+                    <span>Pinned Applications</span>
+                    <div class="toggle-view-btn" onclick="toggleStartSheet(true)">All Apps <i class="fa-solid fa-chevron-right" style="font-size:9px; margin-left:4px;"></i></div>
+                </div>
+                <div class="apps-grid">
+                    <div class="app-grid-node" onclick="triggerApp('browser'); toggleStartMenu();">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg"><span>Edge</span>
+                    </div>
+                    <div class="app-grid-node" onclick="triggerApp('vs-code'); toggleStartMenu();">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg"><span>VS Code</span>
+                    </div>
+                    <div class="app-grid-node" onclick="triggerApp('terminal'); toggleStartMenu();">
+                        <i class="fa-solid fa-square-terminal" style="color:#0078d4;"></i><span>Terminal</span>
+                    </div>
+                    <div class="app-grid-node" onclick="triggerApp('settings'); toggleStartMenu();">
+                        <i class="fa-solid fa-gear" style="color:#666;"></i><span>Settings</span>
+                    </div>
+                </div>
             </div>
-            <div class="taskbar-icon" id="task-browser" onclick="openWindow('browser-win')">
-                <i class="fa-brands fa-edge" style="color: #107c41;"></i>
+
+            <!-- Sheet Layer B: Comprehensive Linear List Sheet -->
+            <div class="view-section hidden" id="start-all-apps-view">
+                <div class="section-header-row">
+                    <span>All System Applications</span>
+                    <div class="toggle-view-btn" onclick="toggleStartSheet(false)"><i class="fa-solid fa-chevron-left" style="font-size:9px; margin-right:4px;"></i> Back</div>
+                </div>
+                <div class="apps-list-linear">
+                    <div class="app-list-row" onclick="triggerApp('browser'); toggleStartMenu();">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg"><span>Edge Browser (Real Web Sandbox)</span>
+                    </div>
+                    <div class="app-list-row" onclick="triggerApp('settings'); toggleStartMenu();">
+                        <i class="fa-solid fa-gear" style="color:#666;"></i><span>Personalization Engine & Control Panel</span>
+                    </div>
+                    <div class="app-list-row" onclick="triggerApp('terminal'); toggleStartMenu();">
+                        <i class="fa-solid fa-square-terminal" style="color:#0078d4;"></i><span>Terminal Command Processor Shell</span>
+                    </div>
+                    <div class="app-list-row" onclick="triggerApp('vs-code'); toggleStartMenu();">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg"><span>Visual Studio Code Integrated Environment</span>
+                    </div>
+                </div>
             </div>
-            <div class="taskbar-icon" id="task-explorer" onclick="openWindow('explorer-win')">
-                <i class="fa-solid fa-folder-open" style="color: #ffb900;"></i>
+        </div>
+    </div>
+
+    <!-- 5. Centered Multi-State Taskbar Dock -->
+    <div class="taskbar-dock">
+        <div class="dock-left"></div>
+        
+        <div class="dock-center">
+            <div class="dock-app-icon" id="task-start-trigger" onclick="toggleStartMenu()" style="cursor:default;">
+                <i class="fa-brands fa-windows" style="color:#0078d4; font-size:23px;"></i>
             </div>
-            <div class="taskbar-icon" id="task-terminal" onclick="openWindow('terminal-win')">
-                <i class="fa-solid fa-terminal" style="color: #555;"></i>
+            <div class="dock-app-icon" id="dock-btn-browser" onclick="triggerApp('browser')">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg">
+            </div>
+            <div class="dock-app-icon" id="dock-btn-vs-code" onclick="triggerApp('vs-code')">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg">
+            </div>
+            <div class="dock-app-icon" id="dock-btn-terminal" onclick="triggerApp('terminal')">
+                <i class="fa-solid fa-square-terminal" style="color:#0078d4;"></i>
+            </div>
+            <div class="dock-app-icon" id="dock-btn-settings" onclick="triggerApp('settings')">
+                <i class="fa-solid fa-gear" style="color:#666;"></i>
             </div>
         </div>
 
-        <div class="taskbar-right">
-            <div class="system-tray-icons">
+        <div class="dock-right">
+            <div class="tray-metric-pill">
                 <i class="fa-solid fa-wifi"></i>
                 <i class="fa-solid fa-volume-high"></i>
-                <i class="fa-solid fa-battery-three-quarters"></i>
+                <i class="fa-solid fa-battery-full"></i>
             </div>
-            <div class="time-widget">
-                <div id="current-time">12:00 PM</div>
-                <div id="current-date">5/16/2026</div>
+            <div class="tray-metric-pill clock-stack">
+                <div id="tray-time" style="font-weight:500;">12:00 PM</div>
+                <div id="tray-date" style="font-size:11px; opacity:0.8;">5/17/2026</div>
             </div>
         </div>
     </div>
 
+    <!-- 6. Complete OS JavaScript Engine Subsystem -->
     <script>
-        let highestZ = 100;
+        let currentActiveZ = 1000;
+        const appRegistryState = {
+            'browser': { opened: false, minimized: false },
+            'vs-code': { opened: false, minimized: false },
+            'terminal': { opened: false, minimized: false },
+            'settings': { opened: false, minimized: false }
+        };
 
-        // --- Start Menu Automation ---
-        function toggleStart() {
-            const menu = document.getElementById('startMenu');
-            menu.classList.toggle('open');
+        // --- Core UI Initializations ---
+        function swapWallpaper(url) {
+            document.getElementById('os-body').style.backgroundImage = `url('${url}')`;
+        }
+        swapWallpaper('https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=1200');
+
+        // --- Start Menu Switch Layout Controls ---
+        function toggleStartMenu() {
+            const menu = document.getElementById('startMenuContainer');
+            menu.classList.toggle('reveal');
+            if(!menu.classList.contains('reveal')) {
+                toggleStartSheet(false);
+            }
         }
 
-        // Close menu when clicking desktop environment
-        document.getElementById('desktop').addEventListener('click', () => {
-            document.getElementById('startMenu').classList.remove('open');
-        });
+        function toggleStartSheet(showAllApps) {
+            const pinned = document.getElementById('start-pinned-view');
+            const allApps = document.getElementById('start-all-apps-view');
+            if (showAllApps) {
+                pinned.classList.add('hidden');
+                allApps.classList.remove('hidden');
+            } else {
+                pinned.classList.remove('hidden');
+                allApps.classList.add('hidden');
+            }
+        }
 
-        // --- Window Display Controls ---
-        function openWindow(id) {
-            const win = document.getElementById(id);
-            highestZ++;
-            win.style.zIndex = highestZ;
-            win.classList.add('active');
+        // --- Taskbar App State Management Processors ---
+        function triggerApp(appId) {
+            const state = appRegistryState[appId];
+            const frame = document.getElementById(`win-${appId}`);
+            const dockBtn = document.getElementById(`dock-btn-${appId}`);
+
+            if (!state.opened) {
+                // Instantiation Phase
+                state.opened = true;
+                frame.classList.add('active');
+                dockBtn.classList.add('app-running');
+                focusWindow(appId);
+            } else if (state.minimized) {
+                // Restoration Phase
+                state.minimized = false;
+                frame.classList.add('active');
+                focusWindow(appId);
+            } else {
+                // Focus Toggle / Minimization Sequence
+                const currentHighest = getHighestActiveFrame();
+                if (currentHighest === `win-${appId}`) {
+                    state.minimized = true;
+                    frame.classList.remove('active');
+                    dockBtn.classList.remove('app-focused');
+                } else {
+                    focusWindow(appId);
+                }
+            }
+        }
+
+        function focusWindow(appId) {
+            currentActiveZ++;
+            const targetFrame = document.getElementById(`win-${appId}`);
+            targetFrame.style.zIndex = currentActiveZ;
             
-            // Map running dots onto taskbar icon
-            const type = id.split('-')[0];
-            document.getElementById(`task-${type}`).classList.add('running', 'active-window');
+            // Clear prior focused application visual states
+            Object.keys(appRegistryState).forEach(key => {
+                document.getElementById(`dock-btn-${key}`).classList.remove('app-focused');
+            });
+            document.getElementById(`dock-btn-${appId}`).classList.add('app-focused');
         }
 
-        function closeWindow(id) {
-            const win = document.getElementById(id);
-            win.classList.remove('active');
-            const type = id.split('-')[0];
-            document.getElementById(`task-${type}`).classList.remove('running', 'active-window');
+        function minimizeWindow(appId) {
+            appRegistryState[appId].minimized = true;
+            document.getElementById(`win-${appId}`).classList.remove('active');
+            document.getElementById(`dock-btn-${appId}`).classList.remove('app-focused');
         }
 
-        function minimizeWindow(id) {
-            const win = document.getElementById(id);
-            win.classList.remove('active');
-            const type = id.split('-')[0];
-            document.getElementById(`task-${type}`).classList.remove('active-window');
+        function maximizeWindow(appId) {
+            document.getElementById(`win-${appId}`).classList.toggle('maximized');
         }
 
-        function maximizeWindow(id) {
-            document.getElementById(id).classList.toggle('maximized');
-        }
-
-        // --- Window Fluid Draggability Script ---
-        function dragWindow(el) {
-            const win = el.parentElement;
-            highestZ++;
-            win.style.zIndex = highestZ;
+        function closeWindow(appId) {
+            const state = appRegistryState[appId];
+            state.opened = false;
+            state.minimized = false;
             
-            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-            el.onmousedown = dragMouseDown;
+            const frame = document.getElementById(`win-${appId}`);
+            frame.classList.remove('active', 'maximized');
+            
+            const dockBtn = document.getElementById(`dock-btn-${appId}`);
+            dockBtn.classList.remove('app-running', 'app-focused');
+        }
 
-            function dragMouseDown(e) {
-                e = e || window.event;
-                if(win.classList.contains('maximized')) return;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
+        function getHighestActiveFrame() {
+            let maxZ = 0;
+            let topId = null;
+            Object.keys(appRegistryState).forEach(id => {
+                const f = document.getElementById(`win-${id}`);
+                if (f.classList.contains('active') && parseInt(f.style.zIndex || 0) > maxZ) {
+                    maxZ = parseInt(f.style.zIndex);
+                    topId = f.id;
+                }
+            });
+            return topId;
+        }
+
+        // --- Custom Component Dragging Architecture ---
+        function mountDrag(titlebarElement) {
+            const frame = titlebarElement.parentElement;
+            if (frame.classList.contains('maximized')) return;
+            
+            focusWindow(frame.id.replace('win-', ''));
+            let xOffset = 0, yOffset = 0, xStart = 0, yStart = 0;
+
+            xStart = window.event.clientX;
+            yStart = window.event.clientY;
+            
+            document.onmouseup = stopFrameDrag;
+            document.onmousemove = frameExecuteDrag;
+
+            function frameExecuteDrag(e) {
+                xOffset = xStart - e.clientX;
+                yOffset = yStart - e.clientY;
+                xStart = e.clientX;
+                yStart = e.clientY;
+                frame.style.top = (frame.offsetTop - yOffset) + "px";
+                frame.style.left = (frame.offsetLeft - xOffset) + "px";
             }
 
-            function elementDrag(e) {
-                e = e || window.event;
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                win.style.top = (win.offsetTop - pos2) + "px";
-                win.style.left = (win.offsetLeft - pos1) + "px";
-            }
-
-            function closeDragElement() {
+            function stopFrameDrag() {
                 document.onmouseup = null;
                 document.onmousemove = null;
             }
         }
 
-        // --- Complete Native Terminal Logic ---
-        function handleTerminal(e) {
+        // --- Advanced Shell Context Menu Dispatcher ---
+        const contextMenu = document.getElementById('desktopContextMenu');
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const startOverlay = document.getElementById('startMenuContainer');
+            if (e.target.closest('.taskbar-dock') || e.target.closest('.start-overlay') || e.target.closest('.win-frame')) return;
+            
+            startOverlay.classList.remove('reveal');
+            contextMenu.style.top = `${e.clientY}px`;
+            contextMenu.style.left = `${e.clientX}px`;
+            contextMenu.style.display = 'flex';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#desktopContextMenu')) {
+                contextMenu.style.display = 'none';
+            }
+            if (!e.target.closest('#startMenuContainer') && !e.target.closest('#task-start-trigger')) {
+                document.getElementById('startMenuContainer').classList.remove('reveal');
+            }
+        });
+
+        // --- JS Terminal Execution Pipeline ---
+        function runTerminalPipe(e) {
             if (e.key === 'Enter') {
                 const input = e.target;
                 const cmd = input.value.trim().toLowerCase();
-                const out = document.getElementById('terminal-output');
-                
-                let reply = '';
+                const log = document.getElementById('term-log');
+                let result = '';
+
                 if (cmd === 'help') {
-                    reply = 'Available Commands: help, clear, date, systeminfo, exit';
+                    result = 'Core Commands: clear, help, sysinfo, date, matrix';
+                } else if (cmd === 'sysinfo') {
+                    result = 'Host: Vercel Cloud Node Architecture\nPlatform Shell: Win11-WebCore JS-UX Engine v1.9\nCPU/RAM: Sandbox Environment Standard';
                 } else if (cmd === 'date') {
-                    reply = new Date().toString();
-                } else if (cmd === 'systeminfo') {
-                    reply = 'OS Name: Windows 11 Web Replica\nOS Version: 2026.1.0\nSystem Architecture: Virtual x64 browser core';
+                    result = new Date().toString();
+                } else if (cmd === 'matrix') {
+                    result = 'Wake up, Neo... The browser has you.';
                 } else if (cmd === 'clear') {
-                    out.innerHTML = '';
-                } else if (cmd === 'exit') {
-                    closeWindow('terminal-win');
-                    input.value = '';
-                    return;
+                    log.innerHTML = '';
                 } else if (cmd !== '') {
-                    reply = `'${cmd}' is not recognized as an internal or external command.`;
+                    result = `'${cmd}' was executed but skipped by kernel. Invalid or missing operational routine.`;
                 }
 
-                if(cmd !== 'clear') {
-                    out.innerHTML += `<div class="terminal-line"><span class="terminal-prompt">PS C:\\Users\\VercelUser&gt;</span> ${input.value}</div>`;
-                    if(reply) {
-                        out.innerHTML += `<div class="terminal-line">${reply.replace(/\n/g, '<br>')}</div>`;
-                    }
+                if (cmd !== 'clear') {
+                    log.innerHTML += `<div><span style="color:#ffb900;">PS C:\\Users\\Administrator&gt;</span> ${input.value}</div>`;
+                    if (result) log.innerHTML += `<div>${result.replace(/\n/g, '<br>')}</div>`;
+                    log.innerHTML += `<div>&nbsp;</div>`;
                 }
+
                 input.value = '';
-                const body = out.parentElement;
-                body.scrollTop = body.scrollHeight;
+                const container = log.parentElement;
+                container.scrollTop = container.scrollHeight;
             }
         }
 
-        // --- Live Clock Utility ---
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('current-time').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            document.getElementById('current-date').innerText = now.toLocaleDateString();
+        // --- Dynamic Clock Clock System ---
+        function runClockLoop() {
+            const dateObj = new Date();
+            document.getElementById('tray-time').innerText = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('tray-date').innerText = dateObj.toLocaleDateString();
         }
-        setInterval(updateClock, 1000);
-        updateClock();
+        setInterval(runClockLoop, 1000);
+        runClockLoop();
     </script>
 </body>
 </html>
